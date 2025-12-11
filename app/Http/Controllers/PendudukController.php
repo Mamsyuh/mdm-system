@@ -49,7 +49,7 @@ class PendudukController extends Controller
             $q->whereRaw("TIMESTAMPDIFF(YEAR, tanggal_lahir, CURDATE()) <= ?", [$request->usia_max]);
         }
 
-        $penduduks = $q->orderBy('nama')->paginate(20)->where('status_validasi', '!=', 'Tidak Valid');
+        $penduduks = $q->orderBy('nama')->paginate(20);
 
         // ============================
         // STATISTIK
