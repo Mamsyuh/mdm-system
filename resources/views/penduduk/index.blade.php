@@ -13,6 +13,18 @@
             background-color: #fffbeb;
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='%23d97706' fill-opacity='0.03'/%3E%3C/svg%3E");
         }
+
+        .avatar-admin {
+            background-color: #d97706;
+            /* Warna Amber */
+            border: 2px solid #fff;
+        }
+
+        .avatar-operator {
+            background-color: #e3a65fff;
+            /* Warna Amber */
+            border: 2px solid #fff;
+        }
     </style>
 </head>
 
@@ -22,41 +34,14 @@
     <header class="bg-gradient-to-r from-amber-900 via-red-900 to-amber-900 text-amber-50 shadow-lg sticky top-0 z-20">
         <div class="h-2 bg-gradient-to-r from-amber-500 via-red-500 to-amber-500"></div>
         <div class="px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <button id="menu-toggle" class="md:hidden p-2 rounded-md hover:bg-amber-800">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                        <span class="text-2xl">🏛️</span>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold tracking-wide">DESA Benangin 1</h1>
-                        <p class="text-amber-200 text-sm hidden md:block">📍 Kecamatan Teweh Timur</p>
-                    </div>
-                </div>
-            </div>
-            
-            {{-- PROFILE & LOGOUT --}}
-            <div class="flex items-center gap-4">
-                <span class="text-sm bg-amber-800 px-3 py-1 rounded-full hidden sm:block">{{ auth()->user()->role->name ?? 'Admin' }}</span>
-                <div class="w-10 h-10 avatar-admin rounded-full flex items-center justify-center font-bold">
-                    <i class="fas fa-user-shield text-white text-lg"></i>
-                </div>
-                
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="p-2 text-sm text-red-100 bg-red-700 rounded-full hover:bg-red-800 transition shadow-md hidden sm:block" title="Logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </form>
-            </div>
+            @include('layouts.header')
         </div>
         <div class="h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
     </header>
 
     <div class="flex">
-        <aside id="sidebar" class="sidebar w-64 bg-gradient-to-b from-amber-900 to-red-900 min-h-screen text-amber-50 p-4 fixed md:relative z-10">
+        <aside id="sidebar"
+            class="sidebar w-64 bg-gradient-to-b from-amber-900 to-red-900 min-h-screen text-amber-50 p-4 fixed md:relative z-10">
             <nav class="space-y-2">
                 @include('layouts.navigation')
             </nav>
@@ -64,7 +49,7 @@
                 <p class="text-xs text-amber-200 text-center italic">"Gotong Royong Membangun Desa"</p>
             </div>
         </aside>
-        
+
         <main id="main-content" class="flex-1 p-4 md:p-6 transition-all duration-300">
             <div class="max-w-7xl mx-auto px-4 py-6">
                 {{-- Breadcrumb --}}
@@ -73,38 +58,33 @@
                     <span class="mx-2">/</span>
                     <span class="text-gray-600">Data Penduduk</span>
                 </nav>
-        
+
                 {{-- Alert --}}
                 @if(session('success'))
                     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded-lg">
                         <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
                     </div>
                 @endif
-        
+
                 {{-- Header & Actions --}}
                 {{-- Statistik Penduduk --}}
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div class="bg-white p-4 rounded-xl shadow border-l-4 border-amber-600">
                         <p class="text-gray-600 text-sm">Total Penduduk</p>
                         <h2 class="text-2xl font-bold text-gray-800">{{ $statistik['total'] }}</h2>
                     </div>
-        
+
                     <div class="bg-white p-4 rounded-xl shadow border-l-4 border-blue-600">
                         <p class="text-gray-600 text-sm">Laki-laki</p>
                         <h2 class="text-2xl font-bold text-gray-800">{{ $statistik['laki'] }}</h2>
                     </div>
-        
+
                     <div class="bg-white p-4 rounded-xl shadow border-l-4 border-pink-600">
                         <p class="text-gray-600 text-sm">Perempuan</p>
                         <h2 class="text-2xl font-bold text-gray-800">{{ $statistik['perempuan'] }}</h2>
                     </div>
-        
-                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-green-600">
-                        <p class="text-gray-600 text-sm">Validasi: Valid</p>
-                        <h2 class="text-2xl font-bold text-gray-800">{{ $statistik['valid'] }}</h2>
-                    </div>
                 </div>
-        
+
                 <div class="bg-white rounded-xl shadow-md p-6 mb-6">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
@@ -122,7 +102,7 @@
                             </button>
                         </div>
                     </div>
-        
+
                     {{-- Filter Panel --}}
                     <div id="filterPanel" class="hidden mt-4 pt-4 border-t">
                         <form method="GET" action="{{ route('penduduk.index') }}" class="grid md:grid-cols-4 gap-4">
@@ -137,8 +117,10 @@
                                 <select name="jenis_kelamin"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent">
                                     <option value="">Semua</option>
-                                    <option value="L" {{ request('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                                    <option value="P" {{ request('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
+                                    <option value="L" {{ request('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki
+                                    </option>
+                                    <option value="P" {{ request('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan
+                                    </option>
                                 </select>
                             </div>
                             <div>
@@ -147,7 +129,7 @@
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent">
                                     <option value="">Semua RT</option>
                                     @forelse($rtList as $rt)
-                                    <option value="{{ $rt->rt }}">RT {{ $rt->rt }}</option>
+                                        <option value="{{ $rt->rt }}">RT {{ $rt->rt }}</option>
                                     @empty
                                         <option value="">Tidak ada data</option>
                                     @endforelse
@@ -158,11 +140,13 @@
                                 <select name="status_validasi"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent">
                                     <option value="">Semua</option>
-                                    <option value="valid" {{ request('status_validasi') == 'valid' ? 'selected' : '' }}>Valid
+                                    <option value="valid" {{ request('status_validasi') == 'valid' ? 'selected' : '' }}>
+                                        Valid
                                     </option>
                                     <option value="pending" {{ request('status_validasi') == 'pending' ? 'selected' : '' }}>
                                         Pending</option>
-                                    <option value="reject" {{ request('status_validasi') == 'reject' ? 'selected' : '' }}>Reject
+                                    <option value="reject" {{ request('status_validasi') == 'reject' ? 'selected' : '' }}>
+                                        Reject
                                     </option>
                                 </select>
                             </div>
@@ -179,7 +163,7 @@
                         </form>
                     </div>
                 </div>
-        
+
                 {{-- Table --}}
                 <div class="bg-white rounded-xl shadow-md overflow-hidden">
                     <div class="overflow-x-auto">
@@ -187,13 +171,20 @@
                             <thead class="bg-gradient-to-r from-amber-600 to-amber-700 text-white">
                                 <tr>
                                     <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">No</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">NIK</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Nama</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">L/P</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Umur</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">RT/RW</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
-                                    <th class="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider">Aksi</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">NIK
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Nama
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">L/P
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Umur
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">RT/RW
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Status
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider">Aksi
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -213,12 +204,14 @@
                                         <td class="px-4 py-3 text-sm">{{ $penduduk->rt }}/{{ $penduduk->rw }}</td>
                                         <td class="px-4 py-3 text-sm">
                                             @if($penduduk->status_validasi == 'Valid')
-                                                <span class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">Valid</span>
-                                            @elseif($penduduk->status_validasi == 'Perlu Verifikasi')
                                                 <span
-                                                    class="px-2 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Perlu Verifikasi</span>
+                                                    class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">Valid</span>
+                                            @elseif($penduduk->status_validasi == 'Perlu Verifikasi')
+                                                <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">Perlu
+                                                    Verifikasi</span>
                                             @else
-                                                <span class="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-full">Ditolak</span>
+                                                <span
+                                                    class="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-full">Ditolak</span>
                                             @endif
                                         </td>
                                         <td class="px-4 py-3 text-sm text-center">
@@ -228,10 +221,12 @@
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <form action="{{ route('penduduk.destroy', $penduduk) }}" method="POST"
-                                                    class="inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                                    class="inline"
+                                                    onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-800" title="Hapus">
+                                                    <button type="submit" class="text-red-600 hover:text-red-800"
+                                                        title="Hapus">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -249,7 +244,7 @@
                             </tbody>
                         </table>
                     </div>
-        
+
                     {{-- Pagination --}}
                     <div class="px-4 py-3 bg-gray-50">
                         {{ $penduduks->links() }}

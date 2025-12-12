@@ -60,7 +60,6 @@ class PendudukController extends Controller
             'total' => Penduduk::count(),
             'laki' => Penduduk::where('jenis_kelamin', 'L')->count(),
             'perempuan' => Penduduk::where('jenis_kelamin', 'P')->count(),
-            'valid' => Penduduk::where('status_validasi', 'valid')->count(),
         ];
 
         return view('penduduk.index', compact('penduduks', 'rtList', 'statistik'));
@@ -92,7 +91,7 @@ class PendudukController extends Controller
         }
 
         // Validasi Kepala Keluarga
-        if($request->nik == "Kepala Keluarga"){
+        if ($request->nik == "Kepala Keluarga") {
             $kkCheck = "Iya";
         } else {
             $kkCheck = "Tidak";
@@ -148,7 +147,7 @@ class PendudukController extends Controller
         }
 
         // Validasi Kepala Keluarga
-        if($request->nik == "Kepala Keluarga"){
+        if ($request->nik == "Kepala Keluarga") {
             $kkCheck = "Iya";
         } else {
             $kkCheck = "Tidak";
@@ -199,7 +198,8 @@ class PendudukController extends Controller
         $month = substr($nik, 8, 2);
         $year = substr($nik, 10, 2);
 
-        if ($day > 40) $day -= 40;
+        if ($day > 40)
+            $day -= 40;
 
         $year = ($year <= date('y')) ? "20$year" : "19$year";
 
@@ -228,11 +228,13 @@ class PendudukController extends Controller
             while (($row = fgetcsv($file)) !== false) {
                 $data = array_combine($header, $row);
 
-                if (!isset($data['nik']) || !isset($data['nama'])) continue;
+                if (!isset($data['nik']) || !isset($data['nama']))
+                    continue;
 
                 // Validasi NIK
                 $nikCheck = $this->validateNIK($data['nik']);
-                if ($nikCheck !== true) continue;
+                if ($nikCheck !== true)
+                    continue;
 
                 Penduduk::updateOrCreate(
                     ['nik' => $data['nik']],
@@ -293,7 +295,12 @@ class PendudukController extends Controller
             ->get();
 
         return view('penduduk.statistik', compact(
-            'total', 'laki', 'perempuan', 'usia', 'rt', 'rw'
+            'total',
+            'laki',
+            'perempuan',
+            'usia',
+            'rt',
+            'rw'
         ));
     }
 }

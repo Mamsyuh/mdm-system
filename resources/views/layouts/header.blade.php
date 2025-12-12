@@ -12,13 +12,16 @@
         </div>
     </div>
 </div>
+
+{{-- PROFILE & LOGOUT --}}
 <div class="flex items-center gap-4">
     <span
-        class="text-sm bg-amber-800 px-3 py-1 rounded-full hidden sm:block">{{ auth()->user()->role->name == 'Administrator' ? 'Admin' : 'Operator' }}</span>
-    <div class="w-10 h-10 bg-amber-700 rounded-full flex items-center justify-center font-bold">
-        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+        class="text-sm bg-amber-800 px-3 py-1 rounded-full hidden sm:block">{{ auth()->user()->role->name == 'admin' ? 'Admin' : 'Operator' }}</span>
+    <div
+        class="w-10 h-10 @if(auth()->user()->role->name == 'admin') avatar-admin @else avatar-operator @endif rounded-full flex items-center justify-center font-bold">
+        <i class="fas fa-user-shield text-white text-lg"></i>
     </div>
-    {{-- Logout Button --}}
+
     <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit"

@@ -20,6 +20,18 @@
             .sidebar { transform: translateX(-100%); transition: transform 0.3s ease-in-out; }
             .sidebar.active { transform: translateX(0); box-shadow: 6px 0 10px rgba(0,0,0,0.3); }
         }
+
+        .avatar-admin {
+            background-color: #d97706;
+            /* Warna Amber */
+            border: 2px solid #fff;
+        }
+
+        .avatar-operator {
+            background-color: #e3a65fff;
+            /* Warna Amber */
+            border: 2px solid #fff;
+        }
     </style>
 </head>
 <body class="bg-batik min-h-screen">
@@ -31,9 +43,7 @@
         <div class="px-6 py-4 flex items-center justify-between">
             @include('layouts.header')
         </div>
-        <div class="mt-8 p-4 bg-amber-800/50 rounded-lg border border-amber-600/30">
-            <p class="text-xs text-amber-200 text-center italic">"Gotong Royong Membangun Desa"</p>
-        </div>
+        <div class="h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
     </header>
 
     <div class="flex">

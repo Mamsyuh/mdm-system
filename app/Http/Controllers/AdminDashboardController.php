@@ -16,6 +16,9 @@ class AdminDashboardController extends Controller
         // Asumsi scope valid() sudah ada di model Penduduk
         $pendudukValid = Penduduk::where('status_validasi', 'Valid')->get();
 
+        // Format waktu Indonesia pada dashboard admin
+        $indonesian_date = Carbon::now()->locale('id')->translatedFormat('l, d F Y');
+
         // 1. Total Penduduk (Semua data yang divalidasi)
         $totalPenduduk = Penduduk::all()->count();
 
@@ -37,7 +40,7 @@ class AdminDashboardController extends Controller
             $dataGender->where('jenis_kelamin', 'L')->pluck('total')->first() ?? 0,
             $dataGender->where('jenis_kelamin', 'P')->pluck('total')->first() ?? 0,
         ];
-        
+
         // 4. Statistik Usia (Data untuk Chart)
         $usiaData = [
             $pendudukValid->filter(fn($p) => $p->umur < 5)->count(),
@@ -61,10 +64,11 @@ class AdminDashboardController extends Controller
         $rtData = $dataRT->pluck('total')->toArray();
 
         // Data Simulasi (dipertahankan agar view tidak error)
-        $suratPending = 0; 
+        $suratPending = 0;
 
         return view('admin.dashboard', compact(
             'totalPenduduk',
+            'indonesian_date',
             'dataValid',
             'totalKK',
             'suratPending',
