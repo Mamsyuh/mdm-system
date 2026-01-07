@@ -1,178 +1,182 @@
-@php
-    // Variabel $penduduks dikirim dari SuratController::create()
-@endphp
-
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buat Pengajuan Surat Baru</title>
+    <title>Buat Pengajuan Surat - SISKEP Benangin 1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+
     <style>
-        .bg-batik {
-            background-color: #fffbeb;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='%23d97706' fill-opacity='0.03'/%3E%3C/svg%3E");
-        }
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); transition: transform 0.3s ease-in-out; }
-            .sidebar.active { transform: translateX(0); box-shadow: 6px 0 10px rgba(0,0,0,0.3); }
+        body { font-family: 'Inter', sans-serif; }
+        select, textarea, input { transition: all 0.2s ease-in-out; }
+        select:focus, textarea:focus, input:focus { 
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1);
         }
     </style>
 </head>
-<body class="bg-batik min-h-screen">
 
-    {{-- HEADER (Gunakan layout yang sama) --}}
-    <header class="bg-gradient-to-r from-amber-900 via-red-900 to-amber-900 text-amber-50 shadow-lg sticky top-0 z-20">
-        <div class="h-2 bg-gradient-to-r from-amber-500 via-red-500 to-amber-500"></div>
-        <div class="px-6 py-4 flex items-center justify-between">
+<body class="bg-slate-50 min-h-screen">
+
+    {{-- HEADER --}}
+    <header class="bg-[#0f172a] text-white shadow-xl sticky top-0 z-30">
+        <div class="h-1.5 bg-gradient-to-r from-blue-600 via-emerald-500 to-blue-600"></div>
+        <div class="px-6 py-4 flex items-center justify-between max-w-[1600px] mx-auto">
             <div class="flex items-center gap-4">
-                <button id="menu-toggle" class="md:hidden p-2 rounded-md hover:bg-amber-800">
-                    <i class="fas fa-bars text-xl"></i>
+                <button id="menu-toggle" class="md:hidden p-2 rounded-xl bg-white/10 hover:bg-white/20 transition">
+                    <i class="fas fa-bars text-xl text-blue-400"></i>
                 </button>
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                        <span class="text-2xl">🏛️</span>
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20">
+                        <span class="text-xl">🏛️</span>
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold tracking-wide">DESA Benangin 1</h1>
-                        <p class="text-amber-200 text-sm hidden md:block">📍 Kecamatan Teweh Timur</p>
+                        <h1 class="text-lg font-black tracking-tight leading-none uppercase">SISKEP BENANGIN 1</h1>
+                        <p class="text-blue-400 text-[10px] font-bold tracking-[0.2em] uppercase mt-1 opacity-90">Kecamatan Teweh Timur</p>
                     </div>
                 </div>
             </div>
+            
             <div class="flex items-center gap-4">
-                <span class="text-sm bg-amber-800 px-3 py-1 rounded-full hidden sm:block">{{ auth()->user()->role->name ?? 'Admin' }}</span>
-                <div class="w-10 h-10 bg-amber-700 rounded-full flex items-center justify-center font-bold">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                <div class="hidden md:flex flex-col items-end mr-2">
+                    <span class="text-xs font-bold text-white">{{ auth()->user()->name ?? 'Administrator' }}</span>
+                    <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">{{ auth()->user()->role->name ?? 'Admin' }}</span>
                 </div>
-                {{-- Logout Button --}}
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}" class="flex items-center">
                     @csrf
-                    <button type="submit" class="p-2 text-sm text-red-100 bg-red-700 rounded-full hover:bg-red-800 transition shadow-md hidden sm:block" title="Logout">
-                        <i class="fas fa-sign-out-alt"></i>
+                    <button type="submit" class="w-10 h-10 flex items-center justify-center bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-xl transition-all duration-300 border border-rose-500/20 shadow-lg shadow-rose-500/10">
+                        <i class="fas fa-power-off"></i>
                     </button>
                 </form>
             </div>
         </div>
-        <div class="h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
     </header>
 
-    <div class="flex">
+    <div class="flex max-w-[1600px] mx-auto">
         {{-- SIDEBAR --}}
-        <aside id="sidebar" class="sidebar w-64 bg-gradient-to-b from-amber-900 to-red-900 min-h-screen text-amber-50 p-4 fixed md:relative z-10">
-            <nav class="space-y-2">
-                @if (auth()->user()->role->name === 'admin')
-                    <a href="{{ route('admin.dashboard') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-800 transition">
-                @else
-                    <a href="{{ route('operator.dashboard') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-800 transition">
-                @endif
-                        <i class="fas fa-home"></i> <span>Dashboard</span>
-                    </a>
-
-                <a href="{{ route('validasi.index') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-800 transition">
-                    <i class="fas fa-check-double"></i> <span>Validasi Data</span>
-                </a>
-
-                <a href="{{ route('penduduk.index') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-800 transition">
-                    <i class="fas fa-users"></i> <span>Data Penduduk</span>
-                </a>
-                
-                <a href="{{ route('kk.index') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-800 transition">
-                    <i class="fas fa-address-card"></i> <span>Manajemen KK</span>
-                </a>
-
-                <a href="{{ route('surat.index') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-amber-700 shadow-lg">
-                    <i class="fas fa-envelope-open-text"></i> <span>Layanan Surat</span>
-                </a>
+        <aside id="sidebar" class="w-72 bg-[#0f172a] min-h-screen text-slate-400 p-6 hidden md:block border-r border-white/5">
+            <nav class="space-y-3">
+                @include('layouts.navigation')
             </nav>
-            <div class="mt-8 p-4 bg-amber-800/50 rounded-lg border border-amber-600/30">
-                <p class="text-xs text-amber-200 text-center italic">"Gotong Royong Membangun Desa"</p>
-            </div>
         </aside>
+        
+        {{-- MAIN CONTENT --}}
+        <main class="flex-1 p-6 md:p-10">
+            <div class="max-w-4xl mx-auto">
+                {{-- Breadcrumb & Back Button --}}
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                    <nav class="flex items-center gap-3 text-sm font-semibold tracking-wide">
+                        <a href="{{ route('surat.index') }}" class="text-blue-600 hover:text-blue-700 transition flex items-center gap-2">
+                            <i class="fas fa-arrow-left text-xs"></i> Kembali
+                        </a>
+                        <i class="fas fa-chevron-right text-[10px] text-slate-300"></i>
+                        <span class="text-slate-400">Buat Pengajuan</span>
+                    </nav>
+                </div>
 
-        <main id="main-content" class="flex-1 p-4 md:p-6 transition-all duration-300">
-            
-            <div class="flex justify-between items-center mb-4">
-                <a href="{{ route('surat.index') }}" class="text-blue-600 hover:underline font-semibold">
-                    <i class="fas fa-arrow-left mr-1"></i> Kembali ke Daftar Pengajuan
-                </a>
-            </div>
+                {{-- Form Card --}}
+                <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
+                    <div class="p-8 md:p-12 border-b border-slate-50 bg-gradient-to-r from-slate-50 to-transparent">
+                        <h2 class="text-3xl font-black text-slate-900 tracking-tight">Formulir Pengajuan Surat</h2>
+                        <p class="text-slate-400 text-sm font-medium mt-2">Silahkan lengkapi data pemohon dan detail keperluan surat di bawah ini.</p>
+                    </div>
 
-            <div class="bg-white rounded-xl shadow-2xl p-6">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Formulir Pengajuan Surat Baru</h2>
-                
-                <form action="{{ route('surat.store') }}" method="POST">
-                    @csrf
-                    
-                    {{-- Form Group 1: Pemohon dan Jenis Surat --}}
-                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <form action="{{ route('surat.store') }}" method="POST" class="p-8 md:p-12 space-y-10">
+                        @csrf
                         
-                        {{-- Field: Pemohon (Penduduk) --}}
-                        <div>
-                            <label for="penduduk_id" class="block text-sm font-medium text-gray-700 mb-1">Pilih Pemohon (Penduduk)</label>
-                            <select id="penduduk_id" name="penduduk_id" required 
-                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm">
-                                <option value="" disabled selected>-- Pilih Penduduk --</option>
-                                @foreach($penduduks as $penduduk)
-                                    <option value="{{ $penduduk->id }}" {{ old('penduduk_id') == $penduduk->id ? 'selected' : '' }}>
-                                        {{ $penduduk->nama }} (NIK: {{ $penduduk->nik }})
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('penduduk_id')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            {{-- Field: Pemohon --}}
+                            <div class="space-y-2">
+                                <label for="penduduk_id" class="block text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Nama Pemohon (NIK)</label>
+                                <div class="relative">
+                                    <select id="penduduk_id" name="penduduk_id" required 
+                                        class="block w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 focus:border-blue-500 focus:bg-white outline-none appearance-none cursor-pointer">
+                                        <option value="" disabled selected>-- Pilih Data Penduduk --</option>
+                                        @foreach($penduduks as $penduduk)
+                                            <option value="{{ $penduduk->id }}" {{ old('penduduk_id') == $penduduk->id ? 'selected' : '' }}>
+                                                {{ $penduduk->nama }} — {{ $penduduk->nik }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="absolute inset-y-0 right-5 flex items-center pointer-events-none">
+                                        <i class="fas fa-chevron-down text-slate-400 text-xs"></i>
+                                    </div>
+                                </div>
+                                @error('penduduk_id')
+                                    <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1 uppercase tracking-wider">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Field: Jenis Surat --}}
+                            <div class="space-y-2">
+                                <label for="jenis_surat" class="block text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Jenis Layanan Surat</label>
+                                <div class="relative">
+                                    <select id="jenis_surat" name="jenis_surat" required 
+                                        class="block w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 focus:border-blue-500 focus:bg-white outline-none appearance-none cursor-pointer">
+                                        <option value="" disabled selected>-- Pilih Jenis Surat --</option>
+                                        <option value="Surat Keterangan Domisili" {{ old('jenis_surat') == 'Surat Keterangan Domisili' ? 'selected' : '' }}>Domisili (SKD)</option>
+                                        <option value="Surat Pengantar Nikah" {{ old('jenis_surat') == 'Surat Pengantar Nikah' ? 'selected' : '' }}>Pengantar Nikah (N1-N4)</option>
+                                        <option value="Surat Keterangan Usaha" {{ old('jenis_surat') == 'Surat Keterangan Usaha' ? 'selected' : '' }}>Keterangan Usaha (SKU)</option>
+                                        <option value="Surat Keterangan Tidak Mampu" {{ old('jenis_surat') == 'Surat Keterangan Tidak Mampu' ? 'selected' : '' }}>Tidak Mampu (SKTM)</option>
+                                        <option value="Lainnya" {{ old('jenis_surat') == 'Lainnya' ? 'selected' : '' }}>Lainnya / Umum</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-5 flex items-center pointer-events-none">
+                                        <i class="fas fa-chevron-down text-slate-400 text-xs"></i>
+                                    </div>
+                                </div>
+                                @error('jenis_surat')
+                                    <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1 uppercase tracking-wider">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Field: Keperluan --}}
+                        <div class="space-y-2">
+                            <label for="keperluan" class="block text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Maksud / Keperluan Pengajuan</label>
+                            <textarea id="keperluan" name="keperluan" rows="4" required 
+                                class="block w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-[2rem] text-sm font-medium text-slate-700 focus:border-blue-500 focus:bg-white outline-none resize-none"
+                                placeholder="Jelaskan secara mendetail untuk apa surat ini digunakan... (Contoh: Melengkapi berkas pendaftaran kerja di PT. Maju Jaya)">{{ old('keperluan') }}</textarea>
+                            @error('keperluan')
+                                <p class="text-rose-500 text-[10px] font-bold mt-1 ml-1 uppercase tracking-wider">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        {{-- Field: Jenis Surat --}}
-                        <div>
-                            <label for="jenis_surat" class="block text-sm font-medium text-gray-700 mb-1">Jenis Surat Pengantar</label>
-                            <select id="jenis_surat" name="jenis_surat" required 
-                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm">
-                                <option value="" disabled selected>-- Pilih Jenis Surat --</option>
-                                <option value="Surat Keterangan Domisili" {{ old('jenis_surat') == 'Surat Keterangan Domisili' ? 'selected' : '' }}>Surat Keterangan Domisili</option>
-                                <option value="Surat Pengantar Nikah" {{ old('jenis_surat') == 'Surat Pengantar Nikah' ? 'selected' : '' }}>Surat Pengantar Nikah (N1-N4)</option>
-                                <option value="Surat Keterangan Usaha" {{ old('jenis_surat') == 'Surat Keterangan Usaha' ? 'selected' : '' }}>Surat Keterangan Usaha (SKU)</option>
-                                <option value="Surat Keterangan Tidak Mampu" {{ old('jenis_surat') == 'Surat Keterangan Tidak Mampu' ? 'selected' : '' }}>Surat Keterangan Tidak Mampu (SKTM)</option>
-                                <option value="Lainnya" {{ old('jenis_surat') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
-                            </select>
-                            @error('jenis_surat')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                        {{-- Action Buttons --}}
+                        <div class="flex items-center justify-between pt-6 border-t border-slate-50">
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest hidden md:block">Pastikan data sudah sesuai</p>
+                            <div class="flex gap-4 w-full md:w-auto">
+                                <button type="reset" class="flex-1 md:flex-none px-8 py-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black rounded-2xl transition-all uppercase tracking-tighter text-xs">
+                                    Reset
+                                </button>
+                                <button type="submit" class="flex-1 md:flex-none px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl shadow-xl shadow-blue-500/20 transition-all uppercase tracking-tighter text-xs flex items-center justify-center gap-2">
+                                    <i class="fas fa-paper-plane text-[10px]"></i> Ajukan Sekarang
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    </form>
+                </div>
 
-                    {{-- Field: Keperluan --}}
-                    <div class="mb-6">
-                        <label for="keperluan" class="block text-sm font-medium text-gray-700 mb-1">Keperluan Pengajuan Surat</label>
-                        <textarea id="keperluan" name="keperluan" rows="3" required 
-                            class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500 sm:text-sm"
-                            placeholder="Contoh: Digunakan untuk persyaratan pendaftaran CPNS di kantor pemerintahan">{{ old('keperluan') }}</textarea>
-                        @error('keperluan')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                {{-- Information Card --}}
+                <div class="mt-8 p-6 bg-blue-600 rounded-[2rem] flex items-center gap-6 shadow-xl shadow-blue-500/10 border border-blue-400/20">
+                    <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-white shrink-0">
+                        <i class="fas fa-info-circle text-xl"></i>
                     </div>
-
-                    {{-- Tombol Submit --}}
-                    <div class="flex justify-end">
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition">
-                            <i class="fas fa-paper-plane mr-2"></i> Ajukan Surat
-                        </button>
+                    <div>
+                        <h4 class="text-sm font-black text-white uppercase tracking-tight">Informasi Penting</h4>
+                        <p class="text-blue-100 text-xs leading-relaxed mt-0.5">Setelah diajukan, surat akan masuk ke antrian status <strong>Pending</strong>. Harap tunggu validasi dari Kepala Desa atau Sekretaris Desa untuk penerbitan nomor surat resmi.</p>
                     </div>
-                </form>
-
+                </div>
             </div>
         </main>
     </div>
 
     <script>
-        // Toggle Sidebar Script
         document.getElementById('menu-toggle').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebar').classList.toggle('hidden');
         });
     </script>
-
 </body>
 </html>

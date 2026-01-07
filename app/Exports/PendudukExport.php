@@ -11,34 +11,42 @@ class PendudukExport implements FromCollection, WithHeadings
     public function collection()
     {
         return Penduduk::all([
-            'nik',
-            'nama',
-            'jenis_kelamin',
-            'tempat_lahir',
-            'tanggal_lahir',
+            'kecamatan',
+            'desa',
+            'no_kk',
             'alamat',
             'rt',
             'rw',
+            'nama',
+            'nik',
+            'tempat_lahir',
+            'tanggal_lahir',
+            'jenis_kelamin',
+            'hubungan_keluarga',
             'agama',
-            'status_perkawinan',
-            'pekerjaan'
+            'nama_ibu',
+            'nama_ayah'
         ]);
     }
 
     public function headings(): array
     {
         return [
-            'NIK',
-            'Nama',
-            'Jenis Kelamin',
-            'Tempat Lahir',
-            'Tanggal Lahir',
+            'Nama Kecamatan',
+            'Nama Kelurahan',
+            'No KK',
             'Alamat',
             'RT',
             'RW',
+            'Nama Lengkap Anggota Keluarga',
+            'NIK',
+            'Tempat Lahir',
+            'Tanggal Lahir',
+            'Jenis Kelamin',
+            'Status Hubungan dalam Keluarga',
             'Agama',
-            'Status Perkawinan',
-            'Pekerjaan'
+            'Nama Ibu',
+            'Nama Ayah'
         ];
     }
 }

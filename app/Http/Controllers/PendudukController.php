@@ -131,29 +131,35 @@ class PendudukController extends Controller
         return view('penduduk.edit', compact('penduduk'));
     }
 
-    // ===============================
+   // ===============================
     // UPDATE
     // ===============================
     public function update(Request $request, Penduduk $penduduk)
     {
+        // 1. Validasi Input Dasar
         $request->validate([
             'nik' => 'required|unique:penduduks,nik,' . $penduduk->id,
             'nama' => 'required',
+            'jenis_kelamin' => 'required',
         ]);
 
-        // Validasi NIK
+        // 2. Validasi Format NIK (Logika dari private function validateNIK)
         $nikCheck = $this->validateNIK($request->nik);
         if ($nikCheck !== true) {
             return back()->withErrors(['nik' => $nikCheck])->withInput();
         }
 
-        // Validasi Kepala Keluarga
-        if($request->nik == "Kepala Keluarga"){
-            $kkCheck = "Iya";
-        } else {
-            $kkCheck = "Tidak";
-        }
+        // 3. Tentukan Status Kepala Keluarga (Logika kkCheck)
+        // Catatan: Pastikan field di form Anda sesuai, jika tujuannya mengecek peran dalam KK
+        $kkCheck = ($request->hubungan_keluarga == "Kepala Keluarga") ? "Iya" : "Tidak";
 
+        // 4. Logika Auto-Reset Status Validasi
+        // Jika data sebelumnya 'Tidak Valid', ubah kembali menjadi 'Perlu Verifikasi' agar muncul di dashboard verifikator
+        $newStatus = ($penduduk->status_validasi == 'Tidak Valid') 
+                     ? 'Perlu Verifikasi' 
+                     : $penduduk->status_validasi;
+
+        // 5. Eksekusi Update
         $penduduk->update([
             'kepala_keluarga' => $kkCheck,
             'no_kk' => $request->no_kk,
@@ -169,13 +175,18 @@ class PendudukController extends Controller
             'status_perkawinan' => $request->status_perkawinan,
             'hubungan_keluarga' => $request->hubungan_keluarga,
             'nama_ayah' => $request->nama_ayah,
-            'nama_ibu' => $request->nama_ibu
+            'nama_ibu' => $request->nama_ibu,
+            'status_validasi' => $newStatus, // Simpan status baru
         ]);
 
-        return redirect()->route('penduduk.index')
-            ->with('success', 'Data berhasil diperbarui.');
-    }
+        // 6. Response dengan Pesan Kondisional
+        $pesan = 'Data berhasil diperbarui.';
+        if ($newStatus == 'Perlu Verifikasi' && $penduduk->getOriginal('status_validasi') == 'Tidak Valid') {
+            $pesan = 'Data berhasil diperbarui dan telah dikirim ulang untuk verifikasi.';
+        }
 
+        return redirect()->route('penduduk.index')->with('success', $pesan);
+    }
     // ===============================
     // DELETE
     // ===============================
@@ -260,12 +271,50 @@ class PendudukController extends Controller
     // ===============================
     // EXPORT PDF
     // ===============================
-    public function exportPdf()
-    {
+    // Fungsi untuk menampilkan halaman pilihan (File Menu)
+public function pilihLaporan()
+{
+    return view('laporan.pilih'); // Mengacu ke file yang sudah di-rename
+}
+
+// Fungsi untuk proses cetak PDF (File Tabel)
+// Ganti method exportPdf() yang lama dengan ini:
+
+// Ganti method exportPdf() yang lama dengan ini:
+
+public function exportPdf()
+{
+    try {
+        // Set memory limit dan timeout untuk data besar
+        ini_set('memory_limit', '512M');
+        ini_set('max_execution_time', '300');
+        
+        // Ambil data penduduk
         $penduduk = Penduduk::all();
-        $pdf = Pdf::loadView('penduduk.pdf', compact('penduduk'));
-        return $pdf->download('data-penduduk.pdf');
+        
+        // Cek apakah ada data
+        if ($penduduk->isEmpty()) {
+            return back()->with('error', 'Tidak ada data penduduk untuk diekspor.');
+        }
+        
+        // Load view untuk PDF
+        $pdf = Pdf::loadView('laporan.index', compact('penduduk'))
+                  ->setPaper('a4', 'landscape')
+                  ->setOption('isHtml5ParserEnabled', true)
+                  ->setOption('isRemoteEnabled', true);
+        
+        // Download dengan nama file dinamis
+        return $pdf->download('laporan-penduduk-' . date('Ymd-His') . '.pdf');
+        
+    } catch (\Exception $e) {
+        // Log error detail
+        \Log::error('Error export PDF: ' . $e->getMessage());
+        \Log::error('File: ' . $e->getFile() . ' Line: ' . $e->getLine());
+        
+        // Redirect dengan pesan error
+        return back()->with('error', 'Gagal export PDF: ' . $e->getMessage());
     }
+}
 
     // ===============================
     // STATISTIK (HALAMAN KHUSUS)

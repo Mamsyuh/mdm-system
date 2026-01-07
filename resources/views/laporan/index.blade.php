@@ -1,52 +1,108 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pilih Jenis Laporan</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Laporan Data Penduduk</title>
     <style>
-        /* Gaya Layout */
-        .bg-batik {
-            background-color: #fffbeb;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='%23d97706' fill-opacity='0.03'/%3E%3C/svg%3E");
+        @page { 
+            margin: 1cm; 
+            size: a4 landscape; 
+        }
+        
+        body { 
+            font-family: Arial, sans-serif; 
+            font-size: 8px;
+            line-height: 1.3;
+        }
+        
+        .header { 
+            text-align: center; 
+            border-bottom: 3px solid #000; 
+            margin-bottom: 10px; 
+            padding-bottom: 8px; 
+        }
+        
+        .header h2 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .header p {
+            margin: 0;
+            font-size: 10px;
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 5px;
+        }
+        
+        th, td { 
+            border: 1px solid #000; 
+            padding: 3px 4px;
+            text-align: left;
+        }
+        
+        th { 
+            background-color: #e0e0e0; 
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 7px;
+        }
+        
+        td {
+            font-size: 7px;
+        }
+        
+        .text-center { 
+            text-align: center; 
+        }
+        
+        .no-col {
+            width: 25px;
+            text-align: center;
         }
     </style>
 </head>
-<body class="bg-batik min-h-screen">
-    
-    <div class="flex flex-col items-center justify-center min-h-screen p-4">
-        
-        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg text-center">
-            <h2 class="text-3xl font-bold text-gray-800 mb-2">Cetak Laporan Penduduk</h2>
-            <p class="text-gray-500 mb-8">Pilih format dokumen yang Anda inginkan.</p>
-
-            <div class="flex flex-col md:flex-row justify-center gap-6">
-                
-                {{-- 1. Export PDF --}}
-                <a href="{{ route('penduduk.exportPdf') }}" target="_blank" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-lg shadow-xl transition transform hover:scale-105">
-                    <i class="fas fa-file-pdf text-2xl mb-2"></i>
-                    <p class="text-lg">Export PDF</p>
-                    <p class="text-xs font-normal">Cetak data untuk arsip (Portrait)</p>
-                </a>
-
-                {{-- 2. Export Excel --}}
-                <a href="{{ route('penduduk.exportExcel') }}" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg shadow-xl transition transform hover:scale-105">
-                    <i class="fas fa-file-excel text-2xl mb-2"></i>
-                    <p class="text-lg">Export Excel</p>
-                    <p class="text-xs font-normal">Unduh data untuk diolah</p>
-                </a>
-            </div>
-            
-            <div class="mt-8">
-                <a href="{{ route(auth()->user()->role->name === 'admin' ? 'admin.dashboard' : 'operator.dashboard') }}" class="text-blue-600 hover:underline text-sm">
-                    <i class="fas fa-arrow-left mr-1"></i> Kembali ke Dashboard
-                </a>
-            </div>
-        </div>
+<body>
+    <div class="header">
+        <h2>PEMERINTAH DESA BENANGIN 1</h2>
+        <p>Laporan Data Penduduk Lengkap</p>
     </div>
-
+    
+    <table>
+        <thead>
+            <tr>
+                <th class="no-col">NO</th>
+                <th>NO. KK</th>
+                <th>NIK</th>
+                <th>NAMA LENGKAP</th>
+                <th class="text-center">JK</th>
+                <th>TEMPAT, TGL LAHIR</th>
+                <th>AGAMA</th>
+                <th>HUBUNGAN</th>
+                <th>ALAMAT</th>
+                <th class="text-center">RT/RW</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($penduduk as $p)
+            <tr>
+                <td class="text-center">{{ $loop->iteration }}</td>
+                <td>{{ $p->no_kk ?? '-' }}</td>
+                <td>{{ $p->nik ?? '-' }}</td>
+                <td>{{ strtoupper($p->nama ?? '-') }}</td>
+                <td class="text-center">{{ $p->jenis_kelamin == 'Laki-laki' || $p->jenis_kelamin == 'L' ? 'L' : 'P' }}</td>
+                <td>{{ ($p->tempat_lahir ?? '-') }}, {{ $p->tanggal_lahir ? $p->tanggal_lahir->format('d/m/Y') : '-' }}</td>
+                <td>{{ $p->agama ?? '-' }}</td>
+                <td>{{ $p->hubungan_keluarga ?? '-' }}</td>
+                <td>{{ $p->alamat ?? '-' }}</td>
+                <td class="text-center">{{ ($p->rt ?? '0') }}/{{ ($p->rw ?? '0') }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
 </body>
 </html>
