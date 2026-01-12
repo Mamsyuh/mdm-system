@@ -64,6 +64,12 @@ Route::middleware(['auth', 'role:admin,operator'])->group(function () {
 
     Route::get('/kk/export-pdf', [KartuKeluargaController::class, 'exportPdf'])->name('kk.exportPdf');
     Route::resource('kk', KartuKeluargaController::class);
+
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/pdf', [LaporanController::class, 'exportPdf'])->name('laporan.pdf');
+    Route::get('/laporan/preview', [LaporanController::class, 'previewPdf'])->name('laporan.preview');
+    Route::get('/laporan/excel', [LaporanController::class, 'exportExcel'])->name('laporan.excel'); // TAMBAHKAN INI
+    
 });
 
 Route::middleware('auth')->group(function () {

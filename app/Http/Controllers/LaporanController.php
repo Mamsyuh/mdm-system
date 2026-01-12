@@ -6,17 +6,28 @@ use Illuminate\Http\Request;
 use App\Models\Penduduk;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PendudukExport;
 
 class LaporanController extends Controller
 {
     /**
-     * Menampilkan menu pilihan jenis laporan (PDF atau Excel).
+     * Menampilkan halaman pilihan laporan dengan filter
      */
     public function index()
     {
         try {
-            // View ini hanya menampilkan menu pilihan
-            return view('laporan.pilih');
+            // Ambil tahun dari 2020 sampai tahun sekarang
+            $tahunSekarang = date('Y');
+            $tahunList = range($tahunSekarang, 2020);
+            
+            // Ambil statistik data
+            $totalPenduduk = Penduduk::count();
+            $lakiLaki = Penduduk::where('jenis_kelamin', 'L')->count();
+            $perempuan = Penduduk::where('jenis_kelamin', 'P')->count();
+            
+            return view('laporan.pilih', compact('tahunList', 'totalPenduduk', 'lakiLaki', 'perempuan'));
+            
         } catch (\Exception $e) {
             Log::error('Error di laporan index: ' . $e->getMessage());
             return back()->with('error', 'Gagal membuka halaman laporan: ' . $e->getMessage());
@@ -24,30 +35,55 @@ class LaporanController extends Controller
     }
 
     /**
-     * Export PDF - Download langsung
+     * Export PDF dengan filter
      */
-    public function exportPdf()
+    public function exportPdf(Request $request)
     {
         try {
-            // Ambil semua data penduduk
-            $penduduk = Penduduk::all();
+            // Set memory limit dan timeout
+            ini_set('memory_limit', '512M');
+            ini_set('max_execution_time', '300');
+            
+            // Query dengan filter
+            $query = Penduduk::query();
+            $filterInfo = 'Semua Data';
+            
+            // Filter berdasarkan tipe
+            if ($request->filter_type === 'tahun' && $request->tahun) {
+                // Filter berdasarkan created_at jika ada, jika tidak ada gunakan semua data tahun tersebut
+                if (Schema::hasColumn('penduduks', 'created_at')) {
+                    $query->whereYear('created_at', $request->tahun);
+                }
+                $filterInfo = 'Tahun ' . $request->tahun;
+            } elseif ($request->filter_type === 'bulan' && $request->tahun && $request->bulan) {
+                if (Schema::hasColumn('penduduks', 'created_at')) {
+                    $query->whereYear('created_at', $request->tahun)
+                          ->whereMonth('created_at', $request->bulan);
+                }
+                $bulanNama = $this->getNamaBulan($request->bulan);
+                $filterInfo = $bulanNama . ' ' . $request->tahun;
+            }
+            
+            // Ambil data
+            $penduduk = $query->orderBy('nama')->get();
             
             // Cek apakah ada data
             if ($penduduk->isEmpty()) {
-                return back()->with('warning', 'Tidak ada data penduduk untuk diekspor.');
+                return back()->with('warning', 'Tidak ada data penduduk untuk filter yang dipilih.');
             }
             
-            // Load view dengan data penduduk
-            $pdf = Pdf::loadView('laporan.index', compact('penduduk'))
-                      ->setPaper('a4', 'landscape');
+            // Load view untuk PDF
+            $pdf = Pdf::loadView('laporan.pdf', compact('penduduk', 'filterInfo'))
+                      ->setPaper('a4', 'landscape')
+                      ->setOption('isHtml5ParserEnabled', true)
+                      ->setOption('isRemoteEnabled', true);
             
-            // Download dengan nama file dinamis
-            $filename = 'laporan-penduduk-' . date('Y-m-d-His') . '.pdf';
+            // Nama file dinamis
+            $filename = 'laporan-penduduk-' . strtolower(str_replace(' ', '-', $filterInfo)) . '-' . date('Ymd') . '.pdf';
             
             return $pdf->download($filename);
             
         } catch (\Exception $e) {
-            // Log error untuk debugging
             Log::error('Error export PDF: ' . $e->getMessage());
             Log::error('Stack trace: ' . $e->getTraceAsString());
             
@@ -56,29 +92,94 @@ class LaporanController extends Controller
     }
 
     /**
-     * Preview PDF di browser (opsional)
+     * Preview PDF di browser
      */
-    public function previewPdf()
+    public function previewPdf(Request $request)
     {
         try {
-            // Ambil semua data penduduk
-            $penduduk = Penduduk::all();
+            $query = Penduduk::query();
+            $filterInfo = 'Semua Data';
             
-            // Cek apakah ada data
+            if ($request->filter_type === 'tahun' && $request->tahun) {
+                if (Schema::hasColumn('penduduks', 'created_at')) {
+                    $query->whereYear('created_at', $request->tahun);
+                }
+                $filterInfo = 'Tahun ' . $request->tahun;
+            } elseif ($request->filter_type === 'bulan' && $request->tahun && $request->bulan) {
+                if (Schema::hasColumn('penduduks', 'created_at')) {
+                    $query->whereYear('created_at', $request->tahun)
+                          ->whereMonth('created_at', $request->bulan);
+                }
+                $bulanNama = $this->getNamaBulan($request->bulan);
+                $filterInfo = $bulanNama . ' ' . $request->tahun;
+            }
+            
+            $penduduk = $query->orderBy('nama')->get();
+            
             if ($penduduk->isEmpty()) {
                 return back()->with('warning', 'Tidak ada data penduduk untuk di-preview.');
             }
             
-            // Load view dengan data penduduk
-            $pdf = Pdf::loadView('laporan.index', compact('penduduk'))
+            $pdf = Pdf::loadView('laporan.pdf', compact('penduduk', 'filterInfo'))
                       ->setPaper('a4', 'landscape');
             
-            // Stream untuk preview di browser
             return $pdf->stream('preview-laporan-penduduk.pdf');
             
         } catch (\Exception $e) {
             Log::error('Error preview PDF: ' . $e->getMessage());
             return back()->with('error', 'Gagal preview PDF: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Export Excel dengan filter
+     */
+    public function exportExcel(Request $request)
+    {
+        try {
+            $query = Penduduk::query();
+            $filterInfo = 'semua-data';
+            
+            if ($request->filter_type === 'tahun' && $request->tahun) {
+                if (Schema::hasColumn('penduduks', 'created_at')) {
+                    $query->whereYear('created_at', $request->tahun);
+                }
+                $filterInfo = 'tahun-' . $request->tahun;
+            } elseif ($request->filter_type === 'bulan' && $request->tahun && $request->bulan) {
+                if (Schema::hasColumn('penduduks', 'created_at')) {
+                    $query->whereYear('created_at', $request->tahun)
+                          ->whereMonth('created_at', $request->bulan);
+                }
+                $filterInfo = 'bulan-' . $request->bulan . '-tahun-' . $request->tahun;
+            }
+            
+            $penduduk = $query->get();
+            
+            if ($penduduk->isEmpty()) {
+                return back()->with('warning', 'Tidak ada data untuk diekspor.');
+            }
+            
+            $filename = 'laporan-penduduk-' . $filterInfo . '-' . date('Ymd') . '.xlsx';
+            
+            return Excel::download(new PendudukExport($penduduk), $filename);
+            
+        } catch (\Exception $e) {
+            Log::error('Error export Excel: ' . $e->getMessage());
+            return back()->with('error', 'Gagal export Excel: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Helper: Konversi nomor bulan ke nama bulan
+     */
+    private function getNamaBulan($bulan)
+    {
+        $namaBulan = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+        
+        return $namaBulan[(int)$bulan] ?? '';
     }
 }
