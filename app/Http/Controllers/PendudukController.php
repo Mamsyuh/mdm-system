@@ -8,7 +8,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Penduduk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 
 class PendudukController extends Controller
 {
@@ -52,14 +52,15 @@ class PendudukController extends Controller
         $penduduks = $q->orderBy('nama')->paginate(20);
 
         // ============================
-        // STATISTIK
+        // STATISTIK UNTUK CARD INDEX
         // ============================
         $rtList = Penduduk::select('rt')->distinct()->orderBy('rt')->get();
 
         $statistik = [
-            'total' => Penduduk::count(),
-            'laki' => Penduduk::where('jenis_kelamin', 'L')->count(),
+            'total'     => Penduduk::count(),
+            'laki'      => Penduduk::where('jenis_kelamin', 'L')->count(),
             'perempuan' => Penduduk::where('jenis_kelamin', 'P')->count(),
+            'valid'     => Penduduk::where('status_validasi', 'Valid')->count(),
         ];
 
         return view('penduduk.index', compact('penduduks', 'rtList', 'statistik'));
@@ -84,38 +85,34 @@ class PendudukController extends Controller
             'jenis_kelamin' => 'required',
         ]);
 
-        // Validasi NIK
+        // Validasi Format NIK
         $nikCheck = $this->validateNIK($request->nik);
         if ($nikCheck !== true) {
             return back()->withErrors(['nik' => $nikCheck])->withInput();
         }
 
-        // Validasi Kepala Keluarga
-        if ($request->nik == "Kepala Keluarga") {
-            $kkCheck = "Iya";
-        } else {
-            $kkCheck = "Tidak";
-        }
+        // Validasi Kepala Keluarga berdasarkan input hubungan_keluarga
+        $kkCheck = ($request->hubungan_keluarga == "Kepala Keluarga") ? "Iya" : "Tidak";
 
         Penduduk::create([
-            'kecamatan' => 'Teweh Timur',
-            'desa' => 'Benangin 1',
-            'kepala_keluarga' => $kkCheck,
-            'no_kk' => $request->no_kk,
-            'nik' => $request->nik,
-            'nama' => $request->nama,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'tempat_lahir' => $request->tempat_lahir,
-            'alamat' => $request->alamat,
-            'rt' => $request->rt,
-            'rw' => $request->rw,
-            'agama' => $request->agama,
+            'kecamatan'         => 'Teweh Timur',
+            'desa'              => 'Benangin 1',
+            'kepala_keluarga'   => $kkCheck,
+            'no_kk'             => $request->no_kk,
+            'nik'               => $request->nik,
+            'nama'              => $request->nama,
+            'jenis_kelamin'     => $request->jenis_kelamin,
+            'tanggal_lahir'     => $request->tanggal_lahir,
+            'tempat_lahir'      => $request->tempat_lahir,
+            'alamat'            => $request->alamat,
+            'rt'                => $request->rt,
+            'rw'                => $request->rw,
+            'agama'             => $request->agama,
             'status_perkawinan' => $request->status_perkawinan,
             'hubungan_keluarga' => $request->hubungan_keluarga,
-            'nama_ayah' => $request->nama_ayah,
-            'nama_ibu' => $request->nama_ibu,
-            'status_validasi' => 'Perlu Verifikasi',
+            'nama_ayah'         => $request->nama_ayah,
+            'nama_ibu'          => $request->nama_ibu,
+            'status_validasi'   => 'Perlu Verifikasi',
         ]);
 
         return redirect()->route('penduduk.index')
@@ -130,53 +127,48 @@ class PendudukController extends Controller
         return view('penduduk.edit', compact('penduduk'));
     }
 
-   // ===============================
+    // ===============================
     // UPDATE
     // ===============================
     public function update(Request $request, Penduduk $penduduk)
     {
-        // 1. Validasi Input Dasar
         $request->validate([
             'nik' => 'required|unique:penduduks,nik,' . $penduduk->id,
             'nama' => 'required',
             'jenis_kelamin' => 'required',
         ]);
 
-        // 2. Validasi Format NIK
         $nikCheck = $this->validateNIK($request->nik);
         if ($nikCheck !== true) {
             return back()->withErrors(['nik' => $nikCheck])->withInput();
         }
 
-        // 3. Tentukan Status Kepala Keluarga (Clear - Memilih logika hubungan keluarga)
         $kkCheck = ($request->hubungan_keluarga == "Kepala Keluarga") ? "Iya" : "Tidak";
 
-        // 4. Logika Auto-Reset Status Validasi
+        // Auto-Reset Status jika sebelumnya 'Tidak Valid'
         $newStatus = ($penduduk->status_validasi == 'Tidak Valid') 
                      ? 'Perlu Verifikasi' 
                      : $penduduk->status_validasi;
 
-        // 5. Eksekusi Update
         $penduduk->update([
-            'kepala_keluarga' => $kkCheck,
-            'no_kk' => $request->no_kk,
-            'nik' => $request->nik,
-            'nama' => $request->nama,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'tempat_lahir' => $request->tempat_lahir,
-            'alamat' => $request->alamat,
-            'rt' => $request->rt,
-            'rw' => $request->rw,
-            'agama' => $request->agama,
+            'kepala_keluarga'   => $kkCheck,
+            'no_kk'             => $request->no_kk,
+            'nik'               => $request->nik,
+            'nama'              => $request->nama,
+            'jenis_kelamin'     => $request->jenis_kelamin,
+            'tanggal_lahir'     => $request->tanggal_lahir,
+            'tempat_lahir'      => $request->tempat_lahir,
+            'alamat'            => $request->alamat,
+            'rt'                => $request->rt,
+            'rw'                => $request->rw,
+            'agama'             => $request->agama,
             'status_perkawinan' => $request->status_perkawinan,
             'hubungan_keluarga' => $request->hubungan_keluarga,
-            'nama_ayah' => $request->nama_ayah,
-            'nama_ibu' => $request->nama_ibu,
-            'status_validasi' => $newStatus,
+            'nama_ayah'         => $request->nama_ayah,
+            'nama_ibu'          => $request->nama_ibu,
+            'status_validasi'   => $newStatus,
         ]);
 
-        // 6. Response
         $pesan = 'Data berhasil diperbarui.';
         if ($newStatus == 'Perlu Verifikasi' && $penduduk->getOriginal('status_validasi') == 'Tidak Valid') {
             $pesan = 'Data berhasil diperbarui dan telah dikirim ulang untuk verifikasi.';
@@ -184,6 +176,7 @@ class PendudukController extends Controller
 
         return redirect()->route('penduduk.index')->with('success', $pesan);
     }
+
     // ===============================
     // DELETE
     // ===============================
@@ -203,16 +196,15 @@ class PendudukController extends Controller
             return "NIK harus 16 digit angka.";
         }
 
-        $day = substr($nik, 6, 2);
+        $day   = substr($nik, 6, 2);
         $month = substr($nik, 8, 2);
-        $year = substr($nik, 10, 2);
+        $year  = substr($nik, 10, 2);
 
-        if ($day > 40)
-            $day -= 40;
+        if ($day > 40) $day -= 40;
 
         $year = ($year <= date('y')) ? "20$year" : "19$year";
 
-        if (!checkdate($month, $day, $year)) {
+        if (!checkdate((int)$month, (int)$day, (int)$year)) {
             return "Tanggal lahir pada NIK tidak valid.";
         }
 
@@ -232,28 +224,22 @@ class PendudukController extends Controller
         $header = fgetcsv($file);
 
         DB::beginTransaction();
-
         try {
             while (($row = fgetcsv($file)) !== false) {
                 $data = array_combine($header, $row);
 
-                if (!isset($data['nik']) || !isset($data['nama']))
-                    continue;
+                if (!isset($data['nik']) || !isset($data['nama'])) continue;
 
-                // Validasi NIK
                 $nikCheck = $this->validateNIK($data['nik']);
-                if ($nikCheck !== true)
-                    continue;
+                if ($nikCheck !== true) continue;
 
                 Penduduk::updateOrCreate(
                     ['nik' => $data['nik']],
                     $data
                 );
             }
-
             DB::commit();
             return back()->with('success', 'Berhasil import CSV.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal import: ' . $e->getMessage());
@@ -271,58 +257,43 @@ class PendudukController extends Controller
     // ===============================
     // EXPORT PDF
     // ===============================
-    // Fungsi untuk menampilkan halaman pilihan (File Menu)
-public function pilihLaporan()
-{
-    return view('laporan.pilih'); // Mengacu ke file yang sudah di-rename
-}
-
-// Fungsi untuk proses cetak PDF (File Tabel)
-// Ganti method exportPdf() yang lama dengan ini:
-
-// Ganti method exportPdf() yang lama dengan ini:
-
-public function exportPdf()
-{
-    try {
-        // Set memory limit dan timeout untuk data besar
-        ini_set('memory_limit', '512M');
-        ini_set('max_execution_time', '300');
-        
-        // Ambil data penduduk
-        $penduduk = Penduduk::all();
-        
-        // Cek apakah ada data
-        if ($penduduk->isEmpty()) {
-            return back()->with('error', 'Tidak ada data penduduk untuk diekspor.');
-        }
-        
-        // Load view untuk PDF
-        $pdf = Pdf::loadView('laporan.index', compact('penduduk'))
-                  ->setPaper('a4', 'landscape')
-                  ->setOption('isHtml5ParserEnabled', true)
-                  ->setOption('isRemoteEnabled', true);
-        
-        // Download dengan nama file dinamis
-        return $pdf->download('laporan-penduduk-' . date('Ymd-His') . '.pdf');
-        
-    } catch (\Exception $e) {
-        // Log error detail
-        \Log::error('Error export PDF: ' . $e->getMessage());
-        \Log::error('File: ' . $e->getFile() . ' Line: ' . $e->getLine());
-        
-        // Redirect dengan pesan error
-        return back()->with('error', 'Gagal export PDF: ' . $e->getMessage());
+    public function pilihLaporan()
+    {
+        return view('laporan.pilih');
     }
-}
+
+    public function exportPdf()
+    {
+        try {
+            ini_set('memory_limit', '512M');
+            ini_set('max_execution_time', '300');
+            
+            $penduduk = Penduduk::all();
+            
+            if ($penduduk->isEmpty()) {
+                return back()->with('error', 'Tidak ada data penduduk untuk diekspor.');
+            }
+            
+            $pdf = Pdf::loadView('laporan.index', compact('penduduk'))
+                      ->setPaper('a4', 'landscape')
+                      ->setOption('isHtml5ParserEnabled', true)
+                      ->setOption('isRemoteEnabled', true);
+            
+            return $pdf->download('laporan-penduduk-' . date('Ymd-His') . '.pdf');
+            
+        } catch (\Exception $e) {
+            Log::error('Error export PDF: ' . $e->getMessage());
+            return back()->with('error', 'Gagal export PDF: ' . $e->getMessage());
+        }
+    }
 
     // ===============================
     // STATISTIK (HALAMAN KHUSUS)
     // ===============================
     public function statistik()
     {
-        $total = Penduduk::count();
-        $laki = Penduduk::where('jenis_kelamin', 'L')->count();
+        $total     = Penduduk::count();
+        $laki      = Penduduk::where('jenis_kelamin', 'L')->count();
         $perempuan = Penduduk::where('jenis_kelamin', 'P')->count();
 
         $usia = Penduduk::selectRaw("
@@ -332,22 +303,11 @@ public function exportPdf()
         ")->first();
 
         $rt = Penduduk::selectRaw("rt, COUNT(*) as total")
-            ->groupBy('rt')
-            ->orderBy('rt')
-            ->get();
+            ->groupBy('rt')->orderBy('rt')->get();
 
         $rw = Penduduk::selectRaw("rw, COUNT(*) as total")
-            ->groupBy('rw')
-            ->orderBy('rw')
-            ->get();
+            ->groupBy('rw')->orderBy('rw')->get();
 
-        return view('penduduk.statistik', compact(
-            'total',
-            'laki',
-            'perempuan',
-            'usia',
-            'rt',
-            'rw'
-        ));
+        return view('penduduk.statistik', compact('total', 'laki', 'perempuan', 'usia', 'rt', 'rw'));
     }
 }
