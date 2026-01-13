@@ -10,14 +10,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
 
     <style>
+<<<<<<< HEAD
         body { font-family: 'Inter', sans-serif; }
         .sidebar-active { background: rgba(37, 99, 235, 0.1); border-right: 4px solid #3b82f6; }
+=======
+        .bg-batik {
+            background-color: #fffbeb;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='%23d97706' fill-opacity='0.03'/%3E%3C/svg%3E");
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s ease-in-out; }
+            .sidebar.active { transform: translateX(0); box-shadow: 6px 0 10px rgba(0,0,0,0.3); }
+        }
+
+        .avatar-admin {
+            background-color: #d97706;
+            /* Warna Amber */
+            border: 2px solid #fff;
+        }
+
+        .avatar-operator {
+            background-color: #e3a65fff;
+            /* Warna Amber */
+            border: 2px solid #fff;
+        }
+>>>>>>> b9d24180c6c542f3cb13d186ba7fde8a2324e5ae
     </style>
 </head>
 
 <body class="bg-slate-50 min-h-screen">
 
     {{-- HEADER --}}
+<<<<<<< HEAD
     <header class="bg-[#0f172a] text-white shadow-xl sticky top-0 z-30">
         <div class="h-1.5 bg-gradient-to-r from-blue-600 via-emerald-500 to-blue-600"></div>
         <div class="px-6 py-4 flex items-center justify-between max-w-[1600px] mx-auto">
@@ -49,6 +73,15 @@
                 </form>
             </div>
         </div>
+=======
+    <header class="bg-gradient-to-r from-amber-900 via-red-900 to-amber-900 text-amber-50 shadow-lg sticky top-0 z-20">
+        {{-- ... Kode Header sama dengan index/kk.blade.php ... --}}
+        <div class="h-2 bg-gradient-to-r from-amber-500 via-red-500 to-amber-500"></div>
+        <div class="px-6 py-4 flex items-center justify-between">
+            @include('layouts.header')
+        </div>
+        <div class="h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
+>>>>>>> b9d24180c6c542f3cb13d186ba7fde8a2324e5ae
     </header>
 
     <div class="flex max-w-[1600px] mx-auto">

@@ -7,6 +7,7 @@
     <title>Validasi Data - SISKEP Benangin 1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<<<<<<< HEAD
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
 
     <style>
@@ -45,19 +46,68 @@
                     <i class="fas fa-user-shield text-blue-400"></i>
                 </div>
             </div>
+=======
+
+    <style>
+        .bg-batik {
+            background-color: #fffbeb;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='%23d97706' fill-opacity='0.03'/%3E%3C/svg%3E");
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+                box-shadow: 6px 0 10px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        .avatar-admin {
+            background-color: #d97706;
+            /* Warna Amber */
+            border: 2px solid #fff;
+        }
+
+        .avatar-operator {
+            background-color: #e3a65fff;
+            /* Warna Amber */
+            border: 2px solid #fff;
+        }
+    </style>
+</head>
+
+<body class="bg-batik min-h-screen">
+
+    {{-- HEADER (Gunakan header dari dashboard admin/operator) --}}
+    <header class="bg-gradient-to-r from-amber-900 via-red-900 to-amber-900 text-amber-50 shadow-lg sticky top-0 z-20">
+        <div class="h-2 bg-gradient-to-r from-amber-500 via-red-500 to-amber-500"></div>
+        <div class="px-6 py-4 flex items-center justify-between">
+            @include('layouts.header')
+>>>>>>> b9d24180c6c542f3cb13d186ba7fde8a2324e5ae
         </div>
     </header>
 
     <div class="flex max-w-[1600px] mx-auto">
         {{-- SIDEBAR --}}
+<<<<<<< HEAD
         <aside id="sidebar" class="w-72 bg-[#0f172a] min-h-screen text-slate-400 p-6 hidden md:block border-r border-white/5">
             <nav class="space-y-3">
+=======
+        <aside id="sidebar"
+            class="sidebar w-64 bg-gradient-to-b from-amber-900 to-red-900 min-h-screen text-amber-50 p-4 fixed md:relative z-10">
+            <nav class="space-y-2">
+>>>>>>> b9d24180c6c542f3cb13d186ba7fde8a2324e5ae
                 @include('layouts.navigation')
             </nav>
             <div class="mt-20 p-6 rounded-[2rem] bg-gradient-to-br from-blue-600/10 to-emerald-600/10 border border-white/5 text-center">
                 <p class="text-[11px] text-slate-300 font-medium leading-relaxed uppercase tracking-widest italic">"Gotong Royong Membangun Desa"</p>
             </div>
         </aside>
+<<<<<<< HEAD
         
         {{-- MAIN CONTENT --}}
         <main class="flex-1 p-6 md:p-10">
@@ -79,6 +129,22 @@
                         </h2>
                         <p class="text-slate-400 text-sm font-medium mt-2 italic">Pastikan keabsahan dokumen fisik sebelum melakukan persetujuan data.</p>
                     </div>
+=======
+
+        <main id="main-content" class="flex-1 p-4 md:p-6 transition-all duration-300">
+
+            {{-- HEADER HALAMAN --}}
+            <div class="bg-white rounded-2xl p-6 mb-6 shadow-xl border-t-4 border-blue-600">
+                <h2 class="text-2xl font-bold text-gray-800">📋 Data Penduduk Menunggu Validasi</h2>
+                <p class="text-gray-500 mt-1">Halaman ini digunakan Operator untuk memverifikasi data penduduk baru.</p>
+            </div>
+
+            {{-- ALERT SUKSES/ERROR --}}
+            @if (session('success'))
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                    <p class="font-bold">Berhasil!</p>
+                    <p>{{ session('success') }}</p>
+>>>>>>> b9d24180c6c542f3cb13d186ba7fde8a2324e5ae
                 </div>
         
                 {{-- ALERTS --}}
@@ -89,6 +155,7 @@
                     </div>
                 @endif
 
+<<<<<<< HEAD
                 {{-- DATA TABLE --}}
                 <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
                     <div class="overflow-x-auto">
@@ -150,6 +217,69 @@
                     <div class="px-8 py-6 bg-slate-50/50 border-t border-slate-100">
                         {{ $penduduksPending->links() }}
                     </div>
+=======
+            {{-- TABEL DATA PENDING --}}
+            <div class="bg-white rounded-xl shadow-2xl p-6">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    No.</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nama & NIK</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    TTL & Gender</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Alamat (RT/RW)</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @forelse ($penduduksPending as $penduduk)
+                                <tr class="hover:bg-amber-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {{ $loop->iteration + $penduduksPending->firstItem() - 1 }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-semibold text-gray-900">{{ $penduduk->nama }}</div>
+                                        <div class="text-xs text-gray-500">NIK: {{ $penduduk->nik }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ $penduduk->tempat_lahir }},
+                                            {{ \Carbon\Carbon::parse($penduduk->tanggal_lahir)->format('d/m/Y') }}
+                                        </div>
+                                        <div class="text-xs text-gray-500">{{ $penduduk->jenis_kelamin }}
+                                            ({{ $penduduk->umur ?? '?' }} thn)</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ $penduduk->alamat }} ({{ $penduduk->rt }}/{{ $penduduk->rw }})
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                        {{-- Tombol Aksi --}}
+                                        <a href="{{ route('validasi.show', $penduduk->id) }}"
+                                            class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded text-xs transition">
+                                            <i class="fas fa-search"></i> Detail
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                        <i class="fas fa-check-circle mr-2 text-green-500"></i> Tidak ada data penduduk yang
+                                        menunggu validasi.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+>>>>>>> b9d24180c6c542f3cb13d186ba7fde8a2324e5ae
                 </div>
 
                 {{-- WARNING CARD --}}
@@ -170,14 +300,32 @@
                     </div>
                 </div>
             </div>
+<<<<<<< HEAD
+=======
+
+            {{-- Catatan untuk Operator --}}
+            <div class="mt-6 p-4 bg-red-50 border-l-4 border-red-400 text-red-700">
+                <p class="font-bold"><i class="fas fa-exclamation-triangle mr-2"></i> PERINGATAN OPERATOR</p>
+                <p class="text-sm">Pastikan Anda membandingkan data dengan dokumen asli (KTP/KK) sebelum melakukan
+                    verifikasi.</p>
+            </div>
+
+>>>>>>> b9d24180c6c542f3cb13d186ba7fde8a2324e5ae
         </main>
     </div>
 
     <script>
+<<<<<<< HEAD
         document.getElementById('menu-toggle').addEventListener('click', function() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('hidden');
+=======
+        // Toggle Sidebar Script (Ambil dari dashboard admin/operator)
+        document.getElementById('menu-toggle').addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('active');
+>>>>>>> b9d24180c6c542f3cb13d186ba7fde8a2324e5ae
         });
     </script>
 </body>
+
 </html>

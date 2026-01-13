@@ -16,6 +16,7 @@
     </div>
 </div>
 
+<<<<<<< HEAD
 <div class="flex items-center gap-4">
     {{-- Badge Role: Menggunakan Biru Navy Gelap dengan border aksen biru --}}
     <span class="text-[10px] font-black bg-[#1e293b]/50 text-blue-300 px-4 py-1.5 rounded-full hidden sm:block border border-blue-500/20 tracking-widest">
@@ -29,6 +30,18 @@
 
     {{-- Logout Button: Menggunakan Slate gelap dengan hover Merah Aksi --}}
     <form method="POST" action="{{ route('logout') }}" class="m-0">
+=======
+{{-- PROFILE & LOGOUT --}}
+<div class="flex items-center gap-4">
+    <span
+        class="text-sm bg-amber-800 px-3 py-1 rounded-full hidden sm:block">{{ auth()->user()->role->name == 'admin' ? 'Admin' : 'Operator' }}</span>
+    <div
+        class="w-10 h-10 @if(auth()->user()->role->name == 'admin') avatar-admin @else avatar-operator @endif rounded-full flex items-center justify-center font-bold">
+        <i class="fas fa-user-shield text-white text-lg"></i>
+    </div>
+
+    <form method="POST" action="{{ route('logout') }}">
+>>>>>>> b9d24180c6c542f3cb13d186ba7fde8a2324e5ae
         @csrf
         <button type="submit"
             class="w-10 h-10 flex items-center justify-center text-sm text-slate-300 bg-slate-800 rounded-xl hover:bg-red-600 hover:text-white transition-all duration-300 shadow-lg group"

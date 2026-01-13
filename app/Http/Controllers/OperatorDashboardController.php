@@ -15,7 +15,10 @@ class OperatorDashboardController extends Controller
     public function index()
     {
         // Statistik yang relevan untuk Operator: Fokus pada Validasi
-        
+
+        // Format waktu Indonesia pada dashboard admin
+        $indonesian_date = Carbon::now()->locale('id')->translatedFormat('l, d F Y');
+
         // 1. Total Data Pending (Tugas Utama Operator)
         $totalPending = Penduduk::where('status_validasi', 'pending')->count();
 
@@ -27,15 +30,16 @@ class OperatorDashboardController extends Controller
 
         // 4. Data Pending Terbaru (untuk daftar cepat)
         $recentPending = Penduduk::where('status_validasi', 'pending')
-                                 ->orderBy('created_at', 'desc')
-                                 ->take(5)
-                                 ->get();
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
 
         return view('operator.dashboard', [
             'totalPending' => $totalPending,
             'totalValid' => $totalValid,
             'totalRejected' => $totalRejected,
             'recentPending' => $recentPending,
+            'indonesian_date' => $indonesian_date,
         ]);
     }
 }

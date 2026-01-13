@@ -60,7 +60,6 @@ class PendudukController extends Controller
             'total' => Penduduk::count(),
             'laki' => Penduduk::where('jenis_kelamin', 'L')->count(),
             'perempuan' => Penduduk::where('jenis_kelamin', 'P')->count(),
-            'valid' => Penduduk::where('status_validasi', 'valid')->count(),
         ];
 
         return view('penduduk.index', compact('penduduks', 'rtList', 'statistik'));
@@ -92,7 +91,7 @@ class PendudukController extends Controller
         }
 
         // Validasi Kepala Keluarga
-        if($request->nik == "Kepala Keluarga"){
+        if ($request->nik == "Kepala Keluarga") {
             $kkCheck = "Iya";
         } else {
             $kkCheck = "Tidak";
@@ -143,18 +142,16 @@ class PendudukController extends Controller
             'jenis_kelamin' => 'required',
         ]);
 
-        // 2. Validasi Format NIK (Logika dari private function validateNIK)
+        // 2. Validasi Format NIK
         $nikCheck = $this->validateNIK($request->nik);
         if ($nikCheck !== true) {
             return back()->withErrors(['nik' => $nikCheck])->withInput();
         }
 
-        // 3. Tentukan Status Kepala Keluarga (Logika kkCheck)
-        // Catatan: Pastikan field di form Anda sesuai, jika tujuannya mengecek peran dalam KK
+        // 3. Tentukan Status Kepala Keluarga (Clear - Memilih logika hubungan keluarga)
         $kkCheck = ($request->hubungan_keluarga == "Kepala Keluarga") ? "Iya" : "Tidak";
 
         // 4. Logika Auto-Reset Status Validasi
-        // Jika data sebelumnya 'Tidak Valid', ubah kembali menjadi 'Perlu Verifikasi' agar muncul di dashboard verifikator
         $newStatus = ($penduduk->status_validasi == 'Tidak Valid') 
                      ? 'Perlu Verifikasi' 
                      : $penduduk->status_validasi;
@@ -176,10 +173,10 @@ class PendudukController extends Controller
             'hubungan_keluarga' => $request->hubungan_keluarga,
             'nama_ayah' => $request->nama_ayah,
             'nama_ibu' => $request->nama_ibu,
-            'status_validasi' => $newStatus, // Simpan status baru
+            'status_validasi' => $newStatus,
         ]);
 
-        // 6. Response dengan Pesan Kondisional
+        // 6. Response
         $pesan = 'Data berhasil diperbarui.';
         if ($newStatus == 'Perlu Verifikasi' && $penduduk->getOriginal('status_validasi') == 'Tidak Valid') {
             $pesan = 'Data berhasil diperbarui dan telah dikirim ulang untuk verifikasi.';
@@ -210,7 +207,8 @@ class PendudukController extends Controller
         $month = substr($nik, 8, 2);
         $year = substr($nik, 10, 2);
 
-        if ($day > 40) $day -= 40;
+        if ($day > 40)
+            $day -= 40;
 
         $year = ($year <= date('y')) ? "20$year" : "19$year";
 
@@ -239,11 +237,13 @@ class PendudukController extends Controller
             while (($row = fgetcsv($file)) !== false) {
                 $data = array_combine($header, $row);
 
-                if (!isset($data['nik']) || !isset($data['nama'])) continue;
+                if (!isset($data['nik']) || !isset($data['nama']))
+                    continue;
 
                 // Validasi NIK
                 $nikCheck = $this->validateNIK($data['nik']);
-                if ($nikCheck !== true) continue;
+                if ($nikCheck !== true)
+                    continue;
 
                 Penduduk::updateOrCreate(
                     ['nik' => $data['nik']],
@@ -342,7 +342,12 @@ public function exportPdf()
             ->get();
 
         return view('penduduk.statistik', compact(
-            'total', 'laki', 'perempuan', 'usia', 'rt', 'rw'
+            'total',
+            'laki',
+            'perempuan',
+            'usia',
+            'rt',
+            'rw'
         ));
     }
 }
