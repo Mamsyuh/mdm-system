@@ -56,55 +56,25 @@
 <body class="min-h-screen">
 
     {{-- HEADER (Blue Theme) --}}
-    <header class="bg-blue-950 text-white shadow-lg sticky top-0 z-20">
-        <div class="h-1 bg-emerald-400"></div>
-        <div class="px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <button id="menu-toggle" class="md:hidden p-2 rounded-md hover:bg-blue-800">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-md">
-                        <span class="text-xl">🏛️</span>
-                    </div>
-                    <div>
-                        <h1 class="text-lg font-bold tracking-tight">SISKEP BENANGIN 1</h1>
-                        <p class="text-blue-300 text-xs hidden md:block">Dashboard Administrasi Desa</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <span class="text-xs font-semibold bg-blue-800 px-3 py-1 rounded-full hidden sm:block">
-                    {{ auth()->user()->role->name ?? 'Administrator' }}
-                </span>
-                <div class="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center shadow-inner border-2 border-white/20">
-                    <i class="fas fa-user-shield text-emerald-950 text-lg"></i>
-                </div>
-                
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="p-2 text-red-200 hover:text-white transition" title="Logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </form>
-            </div>
+    <header class="bg-[#0f172a] text-white shadow-xl sticky top-0 z-30">
+        <div class="px-6 py-4 flex items-center justify-between max-w-[1600px] mx-auto">
+            @include('layouts.header')
         </div>
     </header>
 
     <div class="flex">
         {{-- SIDEBAR (Dark Blue) --}}
         <aside id="sidebar" class="sidebar w-64 bg-slate-900 min-h-screen text-slate-300 p-4 fixed md:relative z-10 border-r border-slate-800">
+            <div class="mb-10 px-2">
+                <p class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Menu Utama</p>
+            </div>
             <nav class="space-y-1">
                 @include('layouts.navigation')
             </nav>
             
-            <div class="mt-10 p-4 bg-blue-900/20 rounded-xl border border-blue-500/20">
-                <p class="text-[10px] uppercase tracking-widest text-blue-400 font-bold mb-2">Status Sistem</p>
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                    <span class="text-xs text-slate-400">Server Terhubung</span>
-                </div>
+            <div class="mt-20 p-6 rounded-[2rem] bg-gradient-to-br from-blue-600/10 to-emerald-600/10 border border-white/5 text-center">
+                <i class="fas fa-quote-left text-blue-500/30 text-2xl mb-2"></i>
+                <p class="text-[11px] text-slate-300 font-medium leading-relaxed uppercase tracking-widest">"Gotong Royong Membangun Desa"</p>
             </div>
         </aside>
 

@@ -14,87 +14,36 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <style>
-        .bg-batik {
-            background-color: #fffbeb;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='%23d97706' fill-opacity='0.03'/%3E%3C/svg%3E");
-        }
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); transition: transform 0.3s ease-in-out; }
-            .sidebar.active { transform: translateX(0); box-shadow: 6px 0 10px rgba(0,0,0,0.3); }
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-active { background: rgba(37, 99, 235, 0.1); border-right: 4px solid #3b82f6; }
     </style>
 </head>
-<body class="bg-batik min-h-screen">
+<body class="bg-slate-50 min-h-screen">
 
     {{-- HEADER --}}
-    <header class="bg-gradient-to-r from-amber-900 via-red-900 to-amber-900 text-amber-50 shadow-lg sticky top-0 z-20">
-        {{-- ... Kode Header sama dengan index/kk.blade.php ... --}}
-        <div class="h-2 bg-gradient-to-r from-amber-500 via-red-500 to-amber-500"></div>
-        <div class="px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <button id="menu-toggle" class="md:hidden p-2 rounded-md hover:bg-amber-800">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                        <span class="text-2xl">🏛️</span>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold tracking-wide">DESA Benangin 1</h1>
-                        <p class="text-amber-200 text-sm hidden md:block">📍 Kecamatan Teweh Timur</p>
-                    </div>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <span class="text-sm bg-amber-800 px-3 py-1 rounded-full hidden sm:block">{{ auth()->user()->role->name ?? 'Admin' }}</span>
-                <div class="w-10 h-10 bg-amber-700 rounded-full flex items-center justify-center font-bold">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                </div>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="p-2 text-sm text-red-100 bg-red-700 rounded-full hover:bg-red-800 transition shadow-md hidden sm:block" title="Logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </form>
-            </div>
+    <header class="bg-[#0f172a] text-white shadow-xl sticky top-0 z-30">
+        <div class="px-6 py-4 flex items-center justify-between max-w-[1600px] mx-auto">
+            @include('layouts.header')
         </div>
-        <div class="h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
     </header>
 
-    <div class="flex">
+    <div class="flex max-w-[1600px] mx-auto">
         {{-- SIDEBAR --}}
-        <aside id="sidebar" class="sidebar w-64 bg-gradient-to-b from-amber-900 to-red-900 min-h-screen text-amber-50 p-4 fixed md:relative z-10">
-            <nav class="space-y-2">
-                @if (auth()->user()->role->name === 'admin')
-                    <a href="{{ route('admin.dashboard') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-800 transition">
-                @else
-                    <a href="{{ route('operator.dashboard') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-800 transition">
-                @endif
-                        <i class="fas fa-home"></i> <span>Dashboard</span>
-                    </a>
-
-                <a href="{{ route('validasi.index') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-800 transition">
-                    <i class="fas fa-check-double"></i> <span>Validasi Data</span>
-                </a>
-
-                <a href="{{ route('penduduk.index') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-800 transition">
-                    <i class="fas fa-users"></i> <span>Data Penduduk</span>
-                </a>
-                
-                <a href="{{ route('kk.index') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-800 transition">
-                    <i class="fas fa-address-card"></i> <span>Manajemen KK</span>
-                </a>
-
-                <a href="{{ route('surat.index') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-amber-700 shadow-lg">
-                    <i class="fas fa-envelope-open-text"></i> <span>Layanan Surat</span>
-                </a>
+        <aside id="sidebar" class="w-72 bg-[#0f172a] min-h-screen text-slate-400 p-6 hidden md:block border-r border-white/5">
+            <div class="mb-10 px-2">
+                <p class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Menu Utama</p>
+            </div>
+            <nav class="space-y-3">
+                @include('layouts.navigation')
             </nav>
-            <div class="mt-8 p-4 bg-amber-800/50 rounded-lg border border-amber-600/30">
-                <p class="text-xs text-amber-200 text-center italic">"Gotong Royong Membangun Desa"</p>
+            <div class="mt-20 p-6 rounded-[2rem] bg-gradient-to-br from-blue-600/10 to-emerald-600/10 border border-white/5 text-center">
+                <i class="fas fa-quote-left text-blue-500/30 text-2xl mb-2"></i>
+                <p class="text-[11px] text-slate-300 font-medium leading-relaxed uppercase tracking-widest">"Gotong Royong Membangun Desa"</p>
             </div>
         </aside>
 
-        <main id="main-content" class="flex-1 p-4 md:p-6 transition-all duration-300">
+        {{-- MAIN CONTENT --}}
+        <main id="main-content" class="flex-1 p-6 md:p-10">
             
             <a href="{{ route('surat.index') }}" class="text-blue-600 hover:underline mb-4 block font-semibold">
                 <i class="fas fa-arrow-left mr-1"></i> Kembali ke Daftar Pengajuan
@@ -176,37 +125,27 @@
                         </button>
                     </div>
                 @endif
-                
-                {{-- Aksi Download (Approved) --}}
-                @if ($surat->status === 'approved')
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 border-t pt-4">Dokumen Resmi</h3>
-                    <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition inline-block">
-                        <i class="fas fa-download mr-2"></i> Unduh Surat Resmi (Nomor: {{ $surat->nomor_surat }})
-                    </a>
-                @endif
+            </div>
 
+            {{-- MODAL REJECT (Untuk menolak pengajuan) --}}
+            <div id="rejectModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50">
+                <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl">
+                    <h3 class="text-xl font-bold mb-4 text-red-700">Tolak Pengajuan Surat</h3>
+                    <form method="POST" action="{{ route('surat.reject', $surat->id) }}">
+                        @csrf
+                        <div class="mb-4">
+                            <label for="catatan" class="block text-sm font-medium text-gray-700 mb-1">Alasan Penolakan Wajib Diisi:</label>
+                            <textarea id="catatan" name="catatan" rows="3" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 p-2" placeholder="Contoh: NIK pemohon belum divalidasi atau data keperluan tidak jelas."></textarea>
+                        </div>
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" onclick="document.getElementById('rejectModal').classList.add('hidden')" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition">Batal</button>
+                            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Tolak Pengajuan</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </main>
     </div>
-
-    {{-- MODAL REJECT (Untuk menolak pengajuan) --}}
-    <div id="rejectModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl">
-            <h3 class="text-xl font-bold mb-4 text-red-700">Tolak Pengajuan Surat</h3>
-            <form method="POST" action="{{ route('surat.reject', $surat->id) }}">
-                @csrf
-                <div class="mb-4">
-                    <label for="catatan" class="block text-sm font-medium text-gray-700 mb-1">Alasan Penolakan Wajib Diisi:</label>
-                    <textarea id="catatan" name="catatan" rows="3" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 p-2" placeholder="Contoh: NIK pemohon belum divalidasi atau data keperluan tidak jelas."></textarea>
-                </div>
-                <div class="flex justify-end space-x-3">
-                    <button type="button" onclick="document.getElementById('rejectModal').classList.add('hidden')" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition">Batal</button>
-                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Tolak Pengajuan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
 
     {{-- Script Toggle Sidebar --}}
     <script>

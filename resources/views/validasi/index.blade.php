@@ -19,43 +19,23 @@
 
     {{-- HEADER --}}
     <header class="bg-[#0f172a] text-white shadow-xl sticky top-0 z-30">
-        <div class="h-1.5 bg-gradient-to-r from-blue-600 via-emerald-500 to-blue-600"></div>
         <div class="px-6 py-4 flex items-center justify-between max-w-[1600px] mx-auto">
-            <div class="flex items-center gap-4">
-                <button id="menu-toggle" class="md:hidden p-2 rounded-xl bg-white/10 hover:bg-white/20 transition">
-                    <i class="fas fa-bars text-xl text-blue-400"></i>
-                </button>
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20">
-                        <span class="text-xl">🏛️</span>
-                    </div>
-                    <div>
-                        <h1 class="text-lg font-black tracking-tight leading-none uppercase">SISKEP BENANGIN 1</h1>
-                        <p class="text-blue-400 text-[10px] font-bold tracking-[0.2em] uppercase mt-1 opacity-90">Kecamatan Teweh Timur</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <div class="hidden md:flex flex-col items-end mr-2">
-                    <span class="text-xs font-bold text-white">{{ auth()->user()->name ?? 'Administrator' }}</span>
-                    <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">{{ auth()->user()->role->name ?? 'Operator' }}</span>
-                </div>
-                <div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center border border-blue-500/30">
-                    <i class="fas fa-user-shield text-blue-400"></i>
-                </div>
-            </div>
+            @include('layouts.header')
         </div>
     </header>
 
     <div class="flex max-w-[1600px] mx-auto">
         {{-- SIDEBAR --}}
         <aside id="sidebar" class="w-72 bg-[#0f172a] min-h-screen text-slate-400 p-6 hidden md:block border-r border-white/5">
+            <div class="mb-10 px-2">
+                <p class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Menu Utama</p>
+            </div>
             <nav class="space-y-3">
                 @include('layouts.navigation')
             </nav>
             <div class="mt-20 p-6 rounded-[2rem] bg-gradient-to-br from-blue-600/10 to-emerald-600/10 border border-white/5 text-center">
-                <p class="text-[11px] text-slate-300 font-medium leading-relaxed uppercase tracking-widest italic">"Gotong Royong Membangun Desa"</p>
+                <i class="fas fa-quote-left text-blue-500/30 text-2xl mb-2"></i>
+                <p class="text-[11px] text-slate-300 font-medium leading-relaxed uppercase tracking-widest">"Gotong Royong Membangun Desa"</p>
             </div>
         </aside>
         

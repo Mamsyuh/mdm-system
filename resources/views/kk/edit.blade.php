@@ -89,45 +89,18 @@
                         @csrf
                         @method('PUT')
 
-                        <div class="grid md:grid-cols-2 gap-8">
-                            {{-- NO KK --}}
-                            <div class="space-y-2">
-                                <label for="no_kk" class="text-sm font-bold text-slate-700 ml-1">Nomor KK (16 Digit) <span class="text-red-500">*</span></label>
-                                <input type="text" name="no_kk" id="no_kk" value="{{ old('no_kk', $kk->no_kk) }}" required 
-                                    class="w-full border-2 border-slate-100 bg-slate-50 rounded-2xl p-3.5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white outline-none transition duration-300 font-semibold @error('no_kk') border-red-500 @enderror">
-                                @error('no_kk') <p class="text-red-500 text-[11px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
-                            </div>
-
-                            {{-- KEPALA KELUARGA --}}
-                            <div class="space-y-2">
-                                <label for="kepala_keluarga" class="text-sm font-bold text-slate-700 ml-1">Kepala Keluarga <span class="text-red-500">*</span></label>
-                                <input type="text" name="kepala_keluarga" id="kepala_keluarga" value="{{ old('kepala_keluarga', $kk->kepala_keluarga) }}" required 
-                                    class="w-full border-2 border-slate-100 bg-slate-50 rounded-2xl p-3.5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white outline-none transition duration-300 font-semibold @error('kepala_keluarga') border-red-500 @enderror">
-                                @error('kepala_keluarga') <p class="text-red-500 text-[11px] font-bold mt-1 ml-1">{{ $message }}</p> @enderror
-                            </div>
-                        </div>
-
-                        {{-- ALAMAT --}}
+                        {{-- Pilih Kepala Keluarga --}}
                         <div class="space-y-2">
-                            <label for="alamat" class="text-sm font-bold text-slate-700 ml-1">Alamat Lengkap</label>
-                            <textarea name="alamat" id="alamat" rows="3" required 
-                                class="w-full border-2 border-slate-100 bg-slate-50 rounded-2xl p-3.5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white outline-none transition duration-300 font-medium">{{ old('alamat', $kk->alamat) }}</textarea>
-                        </div>
-
-                        <div class="grid md:grid-cols-2 gap-8">
-                            {{-- RT --}}
-                            <div class="space-y-2">
-                                <label for="rt" class="text-sm font-bold text-slate-700 ml-1">RT</label>
-                                <input type="text" name="rt" id="rt" value="{{ old('rt', $kk->rt) }}" 
-                                    class="w-full border-2 border-slate-100 bg-slate-50 rounded-2xl p-3.5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300">
-                            </div>
-
-                            {{-- RW --}}
-                            <div class="space-y-2">
-                                <label for="rw" class="text-sm font-bold text-slate-700 ml-1">RW</label>
-                                <input type="text" name="rw" id="rw" value="{{ old('rw', $kk->rw) }}" 
-                                    class="w-full border-2 border-slate-100 bg-slate-50 rounded-2xl p-3.5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition duration-300">
-                            </div>
+                            <label for="penduduk_id" class="text-sm font-bold text-slate-700 ml-1">Kepala Keluarga berdasarkan NIK <span class="text-red-500">*</span></label>
+                            <select id="select_penduduk" name="penduduk_id"
+                                class="select-2 w-full border-2 border-slate-100 bg-slate-50 rounded-2xl p-3.5">
+                                <option value="">-- Pilih --</option>
+                                @foreach ($kepalaKeluarga as $p)
+                                    <option value="{{ $p->id }}" {{ $p->id == $kk->penduduk->id ? 'selected' : '' }}>
+                                        ({{ $p->nik }}) {{ $p->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
 
                         {{-- FOOTER / ACTION --}}
@@ -144,6 +117,18 @@
             </div>
         </main>
     </div>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $('#select_penduduk').select2({
+            placeholder: "Cari berdasarkan nama atau NIK...",
+            allowClear: true
+        });
+    </script>
 
     <script>
         // Toggle Sidebar Script

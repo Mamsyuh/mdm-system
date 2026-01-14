@@ -19,33 +19,8 @@
     
     {{-- HEADER: Menggunakan Navy Deep Blue sesuai Landing Page --}}
     <header class="bg-[#0f172a] text-white shadow-xl sticky top-0 z-30 border-b border-white/10">
-        {{-- Accent line di bagian paling atas --}}
-        <div class="h-[3px] bg-gradient-to-r from-blue-600 via-emerald-500 to-blue-600"></div>
-        
         <div class="px-6 py-4 flex items-center justify-between max-w-[1600px] mx-auto">
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-4">
-                    {{-- Logo Container Glassmorphism --}}
-                    <div class="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20 shadow-inner">
-                        <span class="text-2xl">🏛️</span>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-black tracking-tight leading-none uppercase">SISKEP BENANGIN 1</h1>
-                        <p class="text-blue-400 text-[10px] font-bold tracking-[0.2em] uppercase mt-1 opacity-90">Sistem Informasi Desa</p>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Sisi Kanan Header (Opsional: User Profile) --}}
-            <div class="flex items-center gap-4">
-                <div class="hidden md:flex flex-col items-end mr-2">
-                    <span class="text-xs font-bold text-white leading-none">{{ auth()->user()->name ?? 'Administrator' }}</span>
-                    <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Online</span>
-                </div>
-                <div class="w-10 h-10 bg-emerald-500 text-emerald-950 rounded-xl flex items-center justify-center font-black shadow-lg shadow-emerald-500/20">
-                    {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
-                </div>
-            </div>
+            @include('layouts.header')
         </div>
     </header>
 

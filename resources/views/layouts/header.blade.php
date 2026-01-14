@@ -17,10 +17,10 @@
 </div>
 
 <div class="flex items-center gap-4">
-    {{-- Badge Role: Menggunakan Biru Navy Gelap dengan border aksen biru --}}
-    <span class="text-[10px] font-black bg-[#1e293b]/50 text-blue-300 px-4 py-1.5 rounded-full hidden sm:block border border-blue-500/20 tracking-widest">
-        {{ auth()->user()->role->name == 'Administrator' ? 'ADMIN' : 'OPERATOR' }}
-    </span>
+    <div class="text-right hidden sm:block">
+        <p class="text-sm font-bold">{{ auth()->user()->name }}</p>
+        <p class="text-xs text-emerald-400 font-medium uppercase tracking-tighter">online</p>
+    </div>
 
     {{-- Avatar: Menggunakan Emerald Green (Warna Tombol Landing Page Anda) --}}
     <div class="w-10 h-10 bg-emerald-500 text-emerald-950 rounded-xl flex items-center justify-center font-black shadow-lg shadow-emerald-500/20 border border-emerald-400/20">

@@ -13,14 +13,16 @@
 </a>
 
 {{-- Tautan VALIDASI DATA --}}
+@if(Auth::user()->role->name != 'operator')
 <a href="{{ route('validasi.index') }}"
     class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group 
     {{ Route::is('validasi.index') 
         ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30 shadow-[0_0_15px_rgba(37,99,235,0.1)]' 
         : 'text-slate-400 hover:bg-white/5 hover:text-slate-200' }}">
-    <i class="fas fa-shield-check text-lg {{ Route::is('validasi.index') ? 'text-blue-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i> 
+    <i class="fas fa-shield text-lg {{ Route::is('validasi.index') ? 'text-blue-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i> 
     <span class="font-bold text-sm tracking-wide">Validasi Data</span>
 </a>
+@endif
 
 {{-- Tautan DATA PENDUDUK --}}
 <a href="{{ route('penduduk.index') }}"
@@ -45,7 +47,7 @@
 {{-- Tautan LAYANAN SURAT --}}
 <a href="{{ route('surat.index') }}"
     class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group 
-    {{ Route::is('surat.index') 
+    {{ Route::is('surat.*') 
         ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30 shadow-[0_0_15_rgba(37,99,235,0.1)]' 
         : 'text-slate-400 hover:bg-white/5 hover:text-slate-200' }}">
     <i class="fas fa-file-invoice text-lg {{ Route::is('surat.index') ? 'text-blue-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i> 

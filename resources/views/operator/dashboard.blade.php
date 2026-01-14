@@ -26,37 +26,7 @@
     {{-- HEADER --}}
     <header class="bg-[#0f172a] text-white shadow-lg sticky top-0 z-20 border-b border-slate-700">
         <div class="px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <button id="menu-toggle" class="md:hidden p-2 rounded-md hover:bg-slate-800">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
-                        <span class="text-xl">🏛️</span>
-                    </div>
-                    <div>
-                        <h1 class="text-lg font-bold tracking-tight uppercase">SISKEP BENANGIN 1</h1>
-                        <p class="text-slate-400 text-xs hidden md:block uppercase tracking-widest">Kecamatan Teweh Timur</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p class="text-sm font-bold">{{ auth()->user()->name }}</p>
-                    <p class="text-xs text-emerald-400 font-medium uppercase tracking-tighter">{{ auth()->user()->role->name ?? 'Operator' }}</p>
-                </div>
-                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold shadow-lg border-2 border-slate-600">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                </div>
-                
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="p-2.5 text-white bg-red-500 rounded-lg hover:bg-red-600 transition shadow-md" title="Logout">
-                        <i class="fas fa-power-off"></i>
-                    </button>
-                </form>
-            </div>
+            @include('layouts.header')
         </div>
     </header>
 
@@ -65,22 +35,12 @@
         <aside id="sidebar" class="sidebar w-64 sidebar-navy min-h-screen text-slate-300 p-4 fixed md:relative z-10 border-r border-slate-800">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4 px-4">Menu Utama</p>
             <nav class="space-y-1">
-                <a href="{{ route('operator.dashboard') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600/10 text-blue-400 font-semibold border border-blue-600/20 shadow-sm">
-                    <i class="fas fa-th-large"></i> <span>Dashboard</span>
-                </a>
-
-                <a href="{{ route('penduduk.index') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white transition">
-                    <i class="fas fa-users"></i> <span>Data Penduduk</span>
-                </a>
-
-                {{-- Modul Manajemen KK --}}
-                <a href="{{ route('kk.index') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white transition">
-                    <i class="fas fa-address-card"></i> <span>Manajemen KK</span>
-                </a>
+                @include('layouts.navigation')
             </nav>
 
-            <div class="absolute bottom-10 left-4 right-4 p-5 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 text-center">
-                <p class="text-[10px] text-slate-400 italic font-medium">"GOTONG ROYONG MEMBANGUN DESA"</p>
+            <div class="mt-20 p-6 rounded-[2rem] bg-gradient-to-br from-blue-600/10 to-emerald-600/10 border border-white/5 text-center">
+                <i class="fas fa-quote-left text-blue-500/30 text-2xl mb-2"></i>
+                <p class="text-[11px] text-slate-300 font-medium leading-relaxed uppercase tracking-widest">"Gotong Royong Membangun Desa"</p>
             </div>
         </aside>
 
@@ -161,56 +121,6 @@
                     <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mt-1">Total Registrasi</p>
                 </div>
             </div>
-            
-            {{-- TABEL DATA TERBARU --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="p-6 border-b border-slate-100 flex items-center justify-between">
-                    <h3 class="text-lg font-bold text-slate-800 uppercase tracking-tight">Antrian Validasi Terbaru</h3>
-                    <span class="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1 rounded-full uppercase">{{ $recentPending->count() }} Data</span>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-slate-100">
-                        <thead class="bg-slate-50/50">
-                            <tr>
-                                <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Warga</th>
-                                <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">NIK</th>
-                                <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tanggal Input</th>
-                                <th class="px-6 py-4 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">Opsi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            @forelse ($recentPending as $penduduk)
-                            <tr class="hover:bg-slate-50/80 transition">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="font-bold text-slate-700 uppercase text-sm">{{ $penduduk->nama }}</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-mono italic">{{ $penduduk->nik }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                                    {{ $penduduk->created_at->translatedFormat('d M Y') }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <a href="{{ route('validasi.show', $penduduk->id) }}" class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition uppercase tracking-tighter">
-                                        Periksa <i class="fas fa-arrow-right ml-2 text-[10px]"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="4" class="px-6 py-12 text-center">
-                                    <div class="flex flex-col items-center">
-                                        <div class="w-16 h-16 bg-emerald-50 text-emerald-400 rounded-full flex items-center justify-center mb-4 text-2xl">
-                                            <i class="fas fa-check"></i>
-                                        </div>
-                                        <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Semua data sudah divalidasi</p>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
         </main>
     </div>
 

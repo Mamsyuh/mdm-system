@@ -49,7 +49,7 @@ class SuratController extends Controller
         
         // Data Penduduk yang dipilih sudah harus valid
         $penduduk = Penduduk::findOrFail($request->penduduk_id);
-        if ($penduduk->status_validasi !== 'valid') {
+        if ($penduduk->status_validasi != 'Valid') {
              return redirect()->back()->withInput()->with('error', 'Data penduduk yang dipilih belum divalidasi oleh Operator/Admin.');
         }
 
@@ -108,9 +108,12 @@ class SuratController extends Controller
             return redirect()->back()->with('error', 'Surat sudah diproses.');
         }
         
+        $hariIni = Carbon::now();
+
         // 1. Generate Nomor Surat Otomatis
         // Misal: 474/001/DB/XII/2025 (KodeSurat/NoUrut/Desa/BulanRomawi/Tahun)
-        $bulanRomawi = Carbon::now()->isoFormat('MMMM');
+        $kodeSurat = random_int(100, 999);
+        $bulanRomawi = $this->monthToRoman($hariIni->month);
         $tahun = Carbon::now()->year;
 
         // Ambil nomor urut terakhir
@@ -118,9 +121,6 @@ class SuratController extends Controller
         // Asumsi nomor urut 3 digit (e.g., 001). Ambil 3 digit di posisi ke-4 (indeks 4) dari string nomor_surat
         $nomorUrut = $latestSurat ? (int)substr($latestSurat->nomor_surat, 4, 3) + 1 : 1; 
         $nomorUrutFormatted = str_pad($nomorUrut, 3, '0', STR_PAD_LEFT);
-
-        // Format Bulan Romawi
-        $bulanRomawi = Carbon::now()->format('MM'); // Gunakan format 2 digit (01-12) atau implementasikan konversi Romawi jika diperlukan
         
         // Sesuaikan format nomor surat agar lebih mudah dihitung
         // Contoh format baru: 474/001/SKD/XII/2025 (KodeSurat/NoUrut/JenisSurat/BulanRomawi/Tahun)
@@ -132,7 +132,7 @@ class SuratController extends Controller
             default => 'LNN',
         };
 
-        $nomorSurat = "474/{$nomorUrutFormatted}/{$jenisSuratKode}/{$bulanRomawi}/{$tahun}";
+        $nomorSurat = "{$kodeSurat}/{$nomorUrutFormatted}/{$jenisSuratKode}/{$bulanRomawi}/{$tahun}";
         
         // 2. Update Status
         $surat->update([
@@ -154,7 +154,7 @@ class SuratController extends Controller
             return redirect()->back()->with('error', 'Surat sudah diproses.');
         }
         
-        $request->validate(['catatan' => 'required|string|min:10']);
+        $request->validate(['catatan' => 'required|string']);
 
         $surat->update([
             'status' => 'rejected',
@@ -180,16 +180,38 @@ class SuratController extends Controller
      */
     public function printPdf(SuratPengantar $surat)
     {
-        if ($surat->status !== 'approved') {
-            return redirect()->back()->with('error', 'Surat belum disetujui, tidak bisa dicetak.');
+        // Validasi status
+        if ($surat->status != 'approved') {
+            return back()->with('error', 'Surat belum disetujui, tidak bisa dicetak.');
         }
 
-        // Pastikan relasi penduduk dan approver dimuat
-        $surat->load('penduduk', 'approver');
-        
-        // Menggunakan view umum 'surat.pdf'
-        $pdf = Pdf::loadView('surat.pdf', compact('surat'))->setPaper('a4', 'portrait');
+        // Load relasi
+        $surat->load(['penduduk', 'approver']);
 
-        return $pdf->stream("RESMI_{$surat->nomor_surat}.pdf");
+        try {
+            // Load view PDF
+            $pdf = Pdf::loadView('surat.pdf', [
+                'surat' => $surat,
+            ])->setPaper('a4', 'portrait');
+
+            return $pdf->download("{$surat->jenis_surat}_{$surat->status}.pdf");
+            
+        } catch (\Exception $e) {
+
+            // Tangkap error untuk debugging
+            return back()->with('error', 'Terjadi kesalahan saat mencetak PDF: ' . $e->getMessage());
+        }
+    }
+
+    function monthToRoman($monthNumber)
+    {
+        $romanMonths = [
+            1 => 'I',  2 => 'II',  3 => 'III',
+            4 => 'IV', 5 => 'V',   6 => 'VI',
+            7 => 'VII',8 => 'VIII',9 => 'IX',
+            10 => 'X', 11 => 'XI', 12 => 'XII'
+        ];
+
+        return $romanMonths[$monthNumber] ?? '';
     }
 }

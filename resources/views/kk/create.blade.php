@@ -42,20 +42,12 @@
         {{-- SIDEBAR (Navy Dark) --}}
         <aside id="sidebar" class="w-64 bg-[#0f172a] min-h-screen text-slate-300 p-4 hidden md:block border-r border-white/5">
             <nav class="space-y-1">
-                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 hover:text-white transition group">
-                    <i class="fas fa-home text-slate-500 group-hover:text-blue-400 transition"></i> 
-                    <span class="font-medium text-sm">Dashboard</span>
-                </a>
-                <a href="{{ route('penduduk.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 hover:text-white transition group">
-                    <i class="fas fa-users text-slate-500 group-hover:text-blue-400 transition"></i> 
-                    <span class="font-medium text-sm">Data Penduduk</span>
-                </a>
-                {{-- Active State --}}
-                <a href="{{ route('kk.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 shadow-sm">
-                    <i class="fas fa-address-card"></i> 
-                    <span class="font-bold text-sm">Manajemen KK</span>
-                </a>
+                @include('layouts.navigation')
             </nav>
+            <div class="mt-20 p-6 rounded-[2rem] bg-gradient-to-br from-blue-600/10 to-emerald-600/10 border border-white/5 text-center">
+                <i class="fas fa-quote-left text-blue-500/30 text-2xl mb-2"></i>
+                <p class="text-[11px] text-slate-300 font-medium leading-relaxed uppercase tracking-widest">"Gotong Royong Membangun Desa"</p>
+            </div>
         </aside>
 
         {{-- MAIN CONTENT --}}
@@ -79,50 +71,18 @@
                     <form action="{{ route('kk.store') }}" method="POST" class="p-8 space-y-8">
                         @csrf
 
-                        <div class="grid md:grid-cols-2 gap-8">
-                            {{-- NO KK --}}
-                            <div class="space-y-2">
-                                <label for="no_kk" class="text-sm font-bold text-slate-700 ml-1">Nomor Kartu Keluarga <span class="text-red-500">*</span></label>
-                                <input type="text" name="no_kk" id="no_kk" value="{{ old('no_kk') }}" required 
-                                    class="w-full border-2 border-slate-100 bg-slate-50 rounded-2xl p-3.5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white outline-none transition duration-300 placeholder:text-slate-400 @error('no_kk') border-red-500 @enderror" 
-                                    placeholder="16 Digit No. KK">
-                                @error('no_kk') <p class="text-red-500 text-xs font-bold mt-1 ml-1">{{ $message }}</p> @enderror
-                            </div>
-
-                            {{-- KEPALA KELUARGA --}}
-                            <div class="space-y-2">
-                                <label for="kepala_keluarga" class="text-sm font-bold text-slate-700 ml-1">Nama Kepala Keluarga <span class="text-red-500">*</span></label>
-                                <input type="text" name="kepala_keluarga" id="kepala_keluarga" value="{{ old('kepala_keluarga') }}" required 
-                                    class="w-full border-2 border-slate-100 bg-slate-50 rounded-2xl p-3.5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white outline-none transition duration-300 placeholder:text-slate-400 @error('kepala_keluarga') border-red-500 @enderror" 
-                                    placeholder="Sesuai KTP">
-                                @error('kepala_keluarga') <p class="text-red-500 text-xs font-bold mt-1 ml-1">{{ $message }}</p> @enderror
-                            </div>
-                        </div>
-
-                        {{-- ALAMAT --}}
+                        {{-- Pilih Kepala Keluarga --}}
                         <div class="space-y-2">
-                            <label for="alamat" class="text-sm font-bold text-slate-700 ml-1">Alamat Lengkap</label>
-                            <textarea name="alamat" id="alamat" rows="3" required 
-                                class="w-full border-2 border-slate-100 bg-slate-50 rounded-2xl p-3.5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white outline-none transition duration-300 placeholder:text-slate-400 @error('alamat') border-red-500 @enderror" 
-                                placeholder="Tuliskan alamat lengkap RT/RW...">{{ old('alamat') }}</textarea>
-                        </div>
-
-                        <div class="grid md:grid-cols-2 gap-8">
-                            {{-- RT --}}
-                            <div class="space-y-2">
-                                <label for="rt" class="text-sm font-bold text-slate-700 ml-1">RT</label>
-                                <input type="text" name="rt" id="rt" value="{{ old('rt') }}" 
-                                    class="w-full border-2 border-slate-100 bg-slate-50 rounded-2xl p-3.5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white outline-none transition duration-300 placeholder:text-slate-400" 
-                                    placeholder="Contoh: 001">
-                            </div>
-
-                            {{-- RW --}}
-                            <div class="space-y-2">
-                                <label for="rw" class="text-sm font-bold text-slate-700 ml-1">RW</label>
-                                <input type="text" name="rw" id="rw" value="{{ old('rw') }}" 
-                                    class="w-full border-2 border-slate-100 bg-slate-50 rounded-2xl p-3.5 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white outline-none transition duration-300 placeholder:text-slate-400" 
-                                    placeholder="Contoh: 002">
-                            </div>
+                            <label for="penduduk_id" class="text-sm font-bold text-slate-700 ml-1">Kepala Keluarga berdasarkan NIK <span class="text-red-500">*</span></label>
+                            <select id="select_penduduk" name="penduduk_id"
+                                class="select-2 w-full border-2 border-slate-100 bg-slate-50 rounded-2xl p-3.5">
+                                <option value="">-- Pilih --</option>
+                                @foreach ($kepalaKeluarga as $p)
+                                    <option value="{{ $p->id }}">
+                                        ({{ $p->nik }}) {{ $p->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
 
                         {{-- TOMBOL SIMPAN (Emerald Green sesuai landing page) --}}
@@ -139,6 +99,18 @@
             </div>
         </main>
     </div>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $('#select_penduduk').select2({
+            placeholder: "Cari berdasarkan nama atau NIK...",
+            allowClear: true
+        });
+    </script>
 
 </body>
 </html>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Penduduk;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PendudukExport;
 

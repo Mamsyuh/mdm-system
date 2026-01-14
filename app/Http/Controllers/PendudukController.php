@@ -20,33 +20,16 @@ class PendudukController extends Controller
         $q = Penduduk::query();
 
         // Pencarian
-        if ($request->nik) {
-            $q->where('nik', 'like', "%{$request->nik}%");
-        }
-
-        if ($request->nama) {
-            $q->where('nama', 'like', "%{$request->nama}%");
+        if($request->search){
+            $q->where(function ($query) use ($request) {
+                $query->where('nama', 'like', '%' . $request->search . '%')
+                    ->orWhere('nik', 'like', '%' . $request->search . '%');
+            });
         }
 
         // Filter
         if ($request->jenis_kelamin) {
             $q->where('jenis_kelamin', $request->jenis_kelamin);
-        }
-
-        if ($request->rt) {
-            $q->where('rt', $request->rt);
-        }
-
-        if ($request->rw) {
-            $q->where('rw', $request->rw);
-        }
-
-        if ($request->usia_min) {
-            $q->whereRaw("TIMESTAMPDIFF(YEAR, tanggal_lahir, CURDATE()) >= ?", [$request->usia_min]);
-        }
-
-        if ($request->usia_max) {
-            $q->whereRaw("TIMESTAMPDIFF(YEAR, tanggal_lahir, CURDATE()) <= ?", [$request->usia_max]);
         }
 
         $penduduks = $q->orderBy('nama')->paginate(20);
@@ -125,6 +108,11 @@ class PendudukController extends Controller
     public function edit(Penduduk $penduduk)
     {
         return view('penduduk.edit', compact('penduduk'));
+    }
+
+    public function show(Penduduk $penduduk)
+    {
+        return view('penduduk.show', compact('penduduk'));
     }
 
     // ===============================

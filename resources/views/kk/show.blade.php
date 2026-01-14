@@ -29,15 +29,6 @@
                     <p class="text-blue-400 text-[10px] font-bold tracking-widest uppercase mt-1">Siskep Digital Desa</p>
                 </div>
             </div>
-            
-            <div class="flex gap-2">
-                <a href="{{ route('kk.exportPdf', $kk->id) }}" target="_blank" class="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-500 text-[10px] font-black uppercase tracking-widest rounded-xl transition shadow-lg shadow-rose-600/20">
-                    <i class="fas fa-file-pdf"></i> <span class="hidden sm:inline">Export PDF</span>
-                </a>
-                <a href="{{ route('kk.edit', $kk->id) }}" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-[10px] font-black uppercase tracking-widest rounded-xl transition shadow-lg shadow-blue-600/20">
-                    <i class="fas fa-edit"></i> <span class="hidden sm:inline">Edit Data</span>
-                </a>
-            </div>
         </div>
     </header>
 

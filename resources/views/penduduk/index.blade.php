@@ -19,36 +19,8 @@
 
     {{-- HEADER: Navy Deep Blue --}}
     <header class="bg-[#0f172a] text-white shadow-xl sticky top-0 z-30">
-        <div class="h-1.5 bg-gradient-to-r from-blue-600 via-emerald-500 to-blue-600"></div>
         <div class="px-6 py-4 flex items-center justify-between max-w-[1600px] mx-auto">
-            <div class="flex items-center gap-4">
-                <button id="menu-toggle" class="md:hidden p-2 rounded-xl bg-white/10 hover:bg-white/20 transition">
-                    <i class="fas fa-bars text-xl text-blue-400"></i>
-                </button>
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20">
-                        <span class="text-xl">🏛️</span>
-                    </div>
-                    <div>
-                        <h1 class="text-lg font-black tracking-tight leading-none uppercase">SISKEP BENANGIN 1</h1>
-                        <p class="text-blue-400 text-[10px] font-bold tracking-[0.2em] uppercase mt-1 opacity-90">Kecamatan Teweh Timur</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <div class="hidden md:flex flex-col items-end mr-2">
-                    <span class="text-xs font-bold text-white">{{ auth()->user()->name ?? 'Administrator' }}</span>
-                    <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">{{ auth()->user()->role->name ?? 'Admin' }}</span>
-                </div>
-                
-                <form method="POST" action="{{ route('logout') }}" class="flex items-center">
-                    @csrf
-                    <button type="submit" class="w-10 h-10 flex items-center justify-center bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-xl transition-all duration-300 border border-rose-500/20 shadow-lg shadow-rose-500/10">
-                        <i class="fas fa-power-off"></i>
-                    </button>
-                </form>
-            </div>
+            @include('layouts.header')
         </div>
     </header>
 
@@ -142,7 +114,7 @@
         
                     {{-- Filter Panel (Hidden by default) --}}
                     <div id="filterPanel" class="hidden bg-slate-50/50 p-8 border-b border-slate-100 animate-fade-in-down">
-                        <form method="GET" action="{{ route('penduduk.index') }}" class="grid md:grid-cols-4 gap-6">
+                        <form method="GET" action="{{ route('penduduk.index') }}" class="grid md:grid-cols-3 gap-6">
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Pencarian Cepat</label>
                                 <input type="text" name="search" value="{{ request('search') }}" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" placeholder="Nama / NIK / No. KK">
@@ -155,15 +127,6 @@
                                     </option>
                                     <option value="P" {{ request('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan
                                     </option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Wilayah (RT)</label>
-                                <select name="rt" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 transition">
-                                    <option value="">Semua RT</option>
-                                    @foreach($rtList as $rt)
-                                        <option value="{{ $rt->rt }}">RT {{ $rt->rt }}</option>
-                                    @endforeach
                                 </select>
                             </div>
                             <div class="flex items-end gap-2">
@@ -206,11 +169,11 @@
                                     <td class="px-8 py-6 text-center">
                                         @if($penduduk->jenis_kelamin == 'L')
                                             <span class="w-9 h-9 bg-blue-50 text-blue-600 rounded-xl inline-flex items-center justify-center text-xs shadow-sm shadow-blue-500/10">
-                                                <i class="fas fa-mars"></i>
+                                                L
                                             </span>
                                         @else
                                             <span class="w-9 h-9 bg-rose-50 text-rose-600 rounded-xl inline-flex items-center justify-center text-xs shadow-sm shadow-rose-500/10">
-                                                <i class="fas fa-venus"></i>
+                                                P
                                             </span>
                                         @endif
                                     </td>
@@ -233,13 +196,24 @@
                                             $currentClass = $statusClasses[$penduduk->status_validasi] ?? 'bg-slate-100 text-slate-700';
                                         @endphp
                                         <span class="px-4 py-1.5 {{ $currentClass }} rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm">
-                                            {{ $penduduk->status_validasi }}
+                                            @if($penduduk->status_validasi == "Perlu Verifikasi")
+                                                Verifikasi
+                                            @elseif($penduduk->status_validasi == "Tidak Valid")
+                                                <span>Invalid</span>
+                                            @else    
+                                                {{ $penduduk->status_validasi }}
+                                            @endif
                                         </span>
                                     </td>
                                     <td class="px-8 py-6 text-right">
                                         <div class="flex justify-end gap-2 opacity-30 group-hover:opacity-100 transition-opacity">
+                                            @if($penduduk->status_validasi == "Perlu Verifikasi" || $penduduk->status_validasi == "Tidak Valid")
                                             <a href="{{ route('penduduk.edit', $penduduk) }}" class="w-10 h-10 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all shadow-sm">
                                                 <i class="fas fa-edit text-xs"></i>
+                                            </a>
+                                            @endif
+                                            <a href="{{ route('penduduk.show', $penduduk) }}" class="w-10 h-10 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                                                <i class="fas fa-eye text-xs"></i>
                                             </a>
                                             <form action="{{ route('penduduk.destroy', $penduduk) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                                 @csrf @method('DELETE')
