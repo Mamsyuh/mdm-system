@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\OperatorDashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
@@ -8,7 +7,7 @@ use App\Http\Controllers\PendudukController;
 use App\Http\Controllers\KartuKeluargaController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\ValidasiController;
-use App\Http\Controllers\SuratController; 
+use App\Http\Controllers\SuratController;
 use App\Http\Controllers\LaporanController;
 
 Route::get('/', function () {
@@ -41,7 +40,7 @@ Route::middleware(['auth', 'role:operator'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin,operator'])->group(function () {
-    Route::resource('surat', SuratController::class)->except(['destroy']); 
+    Route::resource('surat', SuratController::class)->except(['destroy']);
     Route::get('/surat/{surat}/print', [SuratController::class, 'printPdf'])->name('surat.print');
 
     Route::get('/validasi', [ValidasiController::class, 'index'])->name('validasi.index');
@@ -69,7 +68,7 @@ Route::middleware(['auth', 'role:admin,operator'])->group(function () {
     Route::get('/laporan/pdf', [LaporanController::class, 'exportPdf'])->name('laporan.pdf');
     Route::get('/laporan/preview', [LaporanController::class, 'previewPdf'])->name('laporan.preview');
     Route::get('/laporan/excel', [LaporanController::class, 'exportExcel'])->name('laporan.excel'); // TAMBAHKAN INI
-    
+
 });
 
 Route::middleware('auth')->group(function () {
@@ -79,9 +78,9 @@ Route::middleware('auth')->group(function () {
 });
 
 // Tambahkan di paling bawah routes/web.php (sebelum require auth.php)
-Route::get('/test-view', function() {
+Route::get('/test-view', function () {
     $penduduk = \App\Models\Penduduk::all();
     return view('laporan.index', compact('penduduk'));
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

@@ -35,9 +35,17 @@
                 {{-- NIK --}}
                 <div>
                     <label class="block mb-1.5 font-semibold text-slate-700">NIK</label>
-                    <input type="text" name="nik" value="{{ old('nik') }}"
-                        class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                        required maxlength="16" placeholder="Masukkan 16 digit NIK">
+
+                    <div class="flex gap-2">
+                        <input type="text" id="nik" name="nik" value="{{ old('nik') }}"
+                            class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                            required maxlength="16" placeholder="Masukkan 16 digit NIK">
+
+                        <button type="button" onclick="cariNik()"
+                            class="px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
+                            Cari
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -53,7 +61,7 @@
                 {{-- Jenis Kelamin --}}
                 <div>
                     <label class="block mb-1.5 font-semibold text-slate-700">Jenis Kelamin</label>
-                    <select name="jenis_kelamin"
+                    <select id="jenis_kelamin" name="jenis_kelamin"
                         class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition"
                         required>
                         <option value="">-- Pilih --</option>
@@ -73,7 +81,7 @@
                 {{-- Tanggal Lahir --}}
                 <div>
                     <label class="block mb-1.5 font-semibold text-slate-700">Tanggal Lahir</label>
-                    <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}"
+                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}"
                         class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition"
                         onclick="this.showPicker();">
                 </div>
@@ -163,4 +171,37 @@
 
         </form>
     </div>
+
+    <script>
+        function cariNik() {
+            const nik = document.getElementById('nik').value;
+
+            if (nik.length !== 16) {
+                alert("NIK harus 16 digit!");
+                return;
+            }
+
+            // Ambil tanggal lahir dari NIK
+            let tanggal = parseInt(nik.substr(6, 2));
+            let bulan = nik.substr(8, 2);
+            let tahun = nik.substr(10, 2);
+
+            // Tentukan gender
+            let gender = 'L';
+            if (tanggal > 40) {
+                gender = 'P';
+                tanggal = tanggal - 40;
+            }
+
+            // Konversi tahun (asumsi 1900-2099)
+            let tahunFull = parseInt(tahun) > 30 ? '19' + tahun : '20' + tahun;
+
+            // Format tanggal YYYY-MM-DD
+            let tanggalFormatted = `${tahunFull}-${bulan}-${String(tanggal).padStart(2, '0')}`;
+
+            // Set ke form
+            document.getElementById('tanggal_lahir').value = tanggalFormatted;
+            document.getElementById('jenis_kelamin').value = gender;
+        }
+    </script>
 @endsection
