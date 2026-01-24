@@ -41,6 +41,14 @@ class AdminDashboardController extends Controller
             $dataGender->where('jenis_kelamin', 'P')->pluck('total')->first() ?? 0,
         ];
 
+        $dataPemilih = Penduduk::selectRaw('desa, COUNT(*) as total')
+            ->whereDate('tanggal_lahir', '<=', now()->subYears(17))
+            ->groupBy('desa')
+            ->get();
+
+        $pemilihLabels = $dataPemilih->pluck('desa');
+        $pemilihValues = $dataPemilih->pluck('total');
+
         // 4. Statistik Usia (Data untuk Chart)
         $usiaData = [
             $pendudukValid->filter(fn($p) => $p->umur < 5)->count(),
@@ -79,7 +87,9 @@ class AdminDashboardController extends Controller
             'usiaLabels',
             'usiaData',
             'rtLabels',
-            'rtData'
+            'rtData',
+            'pemilihLabels',
+            'pemilihValues'
         ));
     }
 }

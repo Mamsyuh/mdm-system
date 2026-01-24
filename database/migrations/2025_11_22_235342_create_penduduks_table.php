@@ -30,6 +30,8 @@ return new class extends Migration
             $table->string('nama_ayah')->nullable();
 
             // ✅ TAMBAHKAN KOLOM BARU INI
+            $table->string('kategori_usia')->nullable(); // Balita, Anak, dsb
+            $table->string('status_pemilih')->nullable(); // Ya/Tidak
             $table->string('status_validasi')->nullable();
             $table->foreignId('validated_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamp('validated_at')->nullable();

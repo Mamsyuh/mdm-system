@@ -7,20 +7,40 @@
     <title>Dashboard Operator - SISKEP Benangin 1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         /* Menggunakan warna dasar dari screenshot aplikasi Anda */
-        .bg-main { background-color: #f8fafc; }
-        .sidebar-navy { background-color: #0f172a; }
-        .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
-        
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); transition: transform 0.3s ease-in-out; }
-            .sidebar.active { transform: translateX(0); }
+        .bg-main {
+            background-color: #f8fafc;
         }
-        .stat-card:hover { transform: translateY(-4px); transition: all 0.3s ease; }
+
+        .sidebar-navy {
+            background-color: #0f172a;
+        }
+
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
+
 <body class="bg-main min-h-screen">
 
     {{-- HEADER --}}
@@ -45,7 +65,7 @@
         </aside>
 
         <main id="main-content" class="flex-1 p-6 md:p-8">
-            
+
             {{-- BLOCK 1: UCAPAN SELAMAT DATANG --}}
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                 <div>
@@ -86,7 +106,7 @@
                     <i class="fas fa-chevron-right text-slate-300 group-hover:text-emerald-500"></i>
                 </a>
             </div>
-            
+
             {{-- Kartu Statistik --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 <div class="stat-card bg-white rounded-2xl p-6 border-b-4 border-amber-400 card-shadow">
@@ -99,7 +119,7 @@
                     <p class="text-4xl font-black text-slate-800">{{ number_format($totalPending ?? 0, 0, ',', '.') }}</p>
                     <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mt-1">Data Perlu Validasi</p>
                 </div>
-                
+
                 <div class="stat-card bg-white rounded-2xl p-6 border-b-4 border-emerald-500 card-shadow">
                     <div class="flex items-center justify-between mb-4">
                         <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl font-bold">
@@ -121,12 +141,132 @@
                     <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mt-1">Total Registrasi</p>
                 </div>
             </div>
+
+            {{-- CHARTS --}}
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <span class="w-1 h-6 bg-blue-600 rounded-full"></span> Komposisi Gender
+                    </h3>
+                    <div class="aspect-square max-h-[300px] mx-auto">
+                        <canvas id="genderChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <span class="w-1 h-6 bg-blue-600 rounded-full"></span> Kelompok Usia
+                    </h3>
+                    <canvas id="usiaChart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid gap-8 mb-8">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <span class="w-1 h-6 bg-blue-600 rounded-full"></span> Pemilih per desa
+                    </h3>
+                    <canvas id="pemilihChart"></canvas>
+                </div>
+            </div>
         </main>
     </div>
 
     <script>
-        document.getElementById('menu-toggle').addEventListener('click', function () {
+        document.getElementById('menu-toggle').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Warna Palette Biru & Hijau untuk Chart
+        const colorPalette = {
+            blue: '#2563eb',
+            lightBlue: '#60a5fa',
+            emerald: '#10b981',
+            slate: '#64748b'
+        };
+
+        const genderLabels = @json($genderLabels ?? ['Pria', 'Wanita']);
+        const genderCounts = @json($genderCounts ?? [50, 50]);
+
+        // Chart Gender
+        new Chart(document.getElementById('genderChart'), {
+            type: 'doughnut',
+            data: {
+                labels: genderLabels,
+                datasets: [{
+                    data: genderCounts,
+                    backgroundColor: [colorPalette.blue, colorPalette.emerald],
+                    hoverOffset: 10,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Chart Usia
+        new Chart(document.getElementById('usiaChart'), {
+            type: 'bar',
+            data: {
+                labels: @json($usiaLabels ?? []),
+                datasets: [{
+                    label: 'Jiwa',
+                    data: @json($usiaData ?? []),
+                    backgroundColor: colorPalette.blue + 'cc',
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart Pemilih
+        new Chart(document.getElementById('pemilihChart'), {
+            type: 'bar',
+            data: {
+                labels: @json($pemilihLabels ?? []),
+                datasets: [{
+                    label: 'Pemilih Berumur 17 tahun Ke atas',
+                    data: @json($pemilihValues ?? []),
+                    backgroundColor: colorPalette.blue + 'cc',
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
         });
     </script>
 

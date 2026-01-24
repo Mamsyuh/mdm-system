@@ -20,6 +20,6 @@ class KartuKeluarga extends Model
     // Relasi untuk menghitung anggota berdasarkan no_kk yang sama
     public function anggota()
     {
-        return $this->hasMany(Penduduk::class, 'no_kk', 'no_kk');
+        return $this->hasMany(Penduduk::class, 'kk_id', 'id');
     }
 }

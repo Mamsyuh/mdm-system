@@ -14,7 +14,7 @@
         .bg-main-gradient {
             background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #1d4ed8 100%);
         }
-        
+
         body {
             background-color: #f8fafc;
         }
@@ -31,7 +31,7 @@
                 box-shadow: 6px 0 10px rgba(0, 0, 0, 0.3);
             }
         }
-        
+
         .stat-card {
             transition: all 0.3s ease;
         }
@@ -43,16 +43,19 @@
 
         /* Warna Hijau khas Tombol Landing Page */
         .btn-primary-green {
-            background-color: #4ade80; /* Emerald/Lime Green */
+            background-color: #4ade80;
+            /* Emerald/Lime Green */
             color: #064e3b;
             transition: all 0.2s;
         }
+
         .btn-primary-green:hover {
             background-color: #22c55e;
             transform: scale(1.02);
         }
     </style>
 </head>
+
 <body class="min-h-screen">
 
     {{-- HEADER (Blue Theme) --}}
@@ -71,7 +74,7 @@
             <nav class="space-y-1">
                 @include('layouts.navigation')
             </nav>
-            
+
             <div class="mt-20 p-6 rounded-[2rem] bg-gradient-to-br from-blue-600/10 to-emerald-600/10 border border-white/5 text-center">
                 <i class="fas fa-quote-left text-blue-500/30 text-2xl mb-2"></i>
                 <p class="text-[11px] text-slate-300 font-medium leading-relaxed uppercase tracking-widest">"Gotong Royong Membangun Desa"</p>
@@ -79,7 +82,7 @@
         </aside>
 
         <main id="main-content" class="flex-1 p-4 md:p-8 transition-all duration-300">
-            
+
             {{-- BLOCK 1: WELCOME (Gradient Blue) --}}
             <div class="bg-main-gradient rounded-3xl p-8 text-white mb-8 shadow-xl relative overflow-hidden">
                 <div class="relative z-10">
@@ -101,9 +104,9 @@
                     <i class="fas fa-file-pdf text-red-500 text-xl"></i> Export Laporan
                 </a>
             </div>
-            
+
             <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Statistik Utama</h3>
-            
+
             {{-- STAT CARDS (Blue & Emerald Accents) --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="stat-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex justify-between items-center">
@@ -115,7 +118,7 @@
                         <i class="fas fa-users"></i>
                     </div>
                 </div>
-                
+
                 <div class="stat-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex justify-between items-center">
                     <div>
                         <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Data Terverifikasi</p>
@@ -156,20 +159,29 @@
                 </div>
             </div>
 
+            <div class="grid gap-8 mb-8">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <span class="w-1 h-6 bg-blue-600 rounded-full"></span> Pemilih per desa
+                    </h3>
+                    <canvas id="pemilihChart"></canvas>
+                </div>
+            </div>
+
             {{-- SECONDARY ACTION --}}
-           {{--  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col md:flex-row justify-between items-center gap-4 border-l-8 border-l-blue-600">
+            {{-- <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col md:flex-row justify-between items-center gap-4 border-l-8 border-l-blue-600">
                 <div class="text-center md:text-left">
                     <h4 class="text-lg font-bold text-slate-800">Menunggu Persetujuan Surat</h4>
                     <p class="text-slate-500 text-sm italic">Terdapat {{ $suratPending ?? 0 }} permohonan yang harus ditinjau.</p>
-                </div>
-                <a href="{{ route('surat.index') }}" class="w-full md:w-auto px-6 py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl transition flex items-center justify-center gap-2">
-                    <i class="fas fa-file-signature"></i> Buka Antrean
-                </a>
-            </div>
-
-        </main>
     </div>
- --}} 
+    <a href="{{ route('surat.index') }}" class="w-full md:w-auto px-6 py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl transition flex items-center justify-center gap-2">
+        <i class="fas fa-file-signature"></i> Buka Antrean
+    </a>
+    </div>
+    --}}
+
+    </main>
+    </div>
     <script>
         document.getElementById('menu-toggle').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('active');
@@ -202,7 +214,9 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom' }
+                    legend: {
+                        position: 'bottom'
+                    }
                 }
             }
         });
@@ -221,8 +235,46 @@
             },
             options: {
                 scales: {
-                    y: { beginAtZero: true, grid: { display: false } },
-                    x: { grid: { display: false } }
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart Pemilih
+        new Chart(document.getElementById('pemilihChart'), {
+            type: 'bar',
+            data: {
+                labels: @json($pemilihLabels ?? []),
+                datasets: [{
+                    label: 'Pemilih Berumur 17 tahun Ke atas',
+                    data: @json($pemilihValues ?? []),
+                    backgroundColor: colorPalette.blue + 'cc',
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
                 }
             }
         });

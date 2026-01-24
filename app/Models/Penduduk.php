@@ -11,10 +11,28 @@ class Penduduk extends Model
     use HasFactory;
 
     protected $fillable = [
-        'kecamatan', 'desa', 'no_kk', 'kepala_keluarga', 'alamat', 'rt', 'rw',
-        'nama', 'nik', 'tempat_lahir', 'tanggal_lahir', 'jenis_kelamin',
-        'hubungan_keluarga', 'agama', 'nama_ibu', 'nama_ayah',
-        'status_validasi', 'validated_by', 'validated_at', 'kk_id'
+        'kecamatan',
+        'desa',
+        'no_kk',
+        'kepala_keluarga',
+        'alamat',
+        'rt',
+        'rw',
+        'nama',
+        'nik',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'jenis_kelamin',
+        'hubungan_keluarga',
+        'agama',
+        'nama_ibu',
+        'nama_ayah',
+        'kategori_usia',
+        'status_pemilih',
+        'status_validasi',
+        'validated_by',
+        'validated_at',
+        'kk_id'
     ];
 
     protected $casts = [
